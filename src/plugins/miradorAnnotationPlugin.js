@@ -1,15 +1,17 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
-class MiradorImageTools extends Component {
+/** */
+class MiradorAnnotation extends Component {
+  /** */
   render() {
     return (
       <div>HelloWorld</div>
-    )
+    );
   }
 }
 
 export default {
-  target: 'WindowTopMenu',
+  component: MiradorAnnotation,
   mode: 'add',
-  component: MiradorImageTools,
-}
+  target: 'WindowTopMenu',
+};

@@ -1,1 +1,1 @@
- export miradorAnnotationPlugin from './plugins/miradorAnnotationPlugin';
+export miradorAnnotationPlugin from './plugins/miradorAnnotationPlugin';
