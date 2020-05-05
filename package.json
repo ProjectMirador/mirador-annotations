@@ -21,16 +21,18 @@
   },
   "dependencies": {},
   "peerDependencies": {
+    "mirador": "^3.0.0-beta.8",
     "react": "16.x"
   },
   "devDependencies": {
+    "mirador": "^3.0.0-beta.8",
     "nwb": "0.24.x",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
   "author": "",
   "homepage": "",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "repository": "",
   "keywords": [
     "react-component"
