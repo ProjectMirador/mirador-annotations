@@ -44,7 +44,10 @@ class MiradorAnnotation extends Component {
 
 MiradorAnnotation.propTypes = {
   addCompanionWindow: PropTypes.func.isRequired,
-  TargetComponent: PropTypes.node.isRequired,
+  TargetComponent: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.node,
+  ]).isRequired,
   targetProps: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
 
