@@ -1,7 +1,7 @@
 
 import mirador from 'mirador/dist/es/src/index';
 
-import { miradorAnnotationPlugin } from '../../src';
+import { miradorAnnotationPlugin, localStorageAnnotationPlugin } from '../../src';
 
 const config = {
   id: 'demo',
@@ -12,4 +12,5 @@ const config = {
 
 const miradorInstance = mirador.viewer(config, [
   miradorAnnotationPlugin,
+  localStorageAnnotationPlugin,
 ]);
