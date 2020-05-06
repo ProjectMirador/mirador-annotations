@@ -1,16 +1,20 @@
 
 import mirador from 'mirador/dist/es/src/index';
 
-import { miradorAnnotationPlugin, localStorageAnnotationPlugin } from '../../src';
+import { miradorAnnotationPlugin, externalStorageAnnotationPlugin } from '../../src';
+import LocalStorageAdapter from '../../src/LocalStorageAdapter';
 
 const config = {
+  annotation: {
+    adapter: (canvasId) => new LocalStorageAdapter(`localStorage://?canvasId=${canvasId}`),
+  },
   id: 'demo',
   windows: [{
-    loadedManifest: 'https://purl.stanford.edu/sn904cj3429/iiif/manifest',
+    loadedManifest: 'https://iiif.harvardartmuseums.org/manifests/object/299843',
   }],
 };
 
-const miradorInstance = mirador.viewer(config, [
+mirador.viewer(config, [
   miradorAnnotationPlugin,
-  localStorageAnnotationPlugin,
+  externalStorageAnnotationPlugin,
 ]);
