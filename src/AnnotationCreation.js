@@ -9,17 +9,18 @@ class AnnotationCreation extends Component {
   /** */
   constructor(props) {
     super(props);
-    this.state = { annoBody: '' };
+    this.state = { annoBody: '', xywh: '0,0,0,0' };
 
     this.submitForm = this.submitForm.bind(this);
     this.updateBody = this.updateBody.bind(this);
+    this.updateXywh = this.updateXywh.bind(this);
   }
 
   /** */
   submitForm(e) {
     e.preventDefault();
     const { canvases, receiveAnnotation, config } = this.props;
-    const { annoBody } = this.state;
+    const { annoBody, xywh } = this.state;
 
     canvases.forEach((canvas) => {
       const localStorageAdapter = config.annotation.adapter(canvas.id);
@@ -31,7 +32,7 @@ class AnnotationCreation extends Component {
         },
         id: `https://example.org/iiif/book1/page/manifest/${uuid()}`,
         motivation: 'commenting',
-        target: `${canvas.id}#xywh=200,500,1000,1000`,
+        target: `${canvas.id}#xywh=${xywh}`,
         type: 'Annotation',
       };
       const newAnnoPage = localStorageAdapter.create(anno);
@@ -45,12 +46,21 @@ class AnnotationCreation extends Component {
   }
 
   /** */
+  updateXywh(e) {
+    this.setState({ xywh: e.target.value });
+  }
+
+  /** */
   render() {
-    const { annoBody } = this.state;
+    const { annoBody, xywh } = this.state;
 
     return (
       <div>
         <form onSubmit={this.submitForm}>
+          <TextField
+            value={xywh}
+            onChange={this.updateXywh}
+          />
           <TextField
             multiline
             rows={6}
