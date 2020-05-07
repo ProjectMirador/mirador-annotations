@@ -25,6 +25,19 @@ class CanvasListItem extends Component {
   }
 
   /** */
+  editable() {
+    const { canvases, storageAdapter } = this.context;
+    const { annotationid } = this.props;
+
+    const annoIds = canvases.map((canvas) => {
+      const adapter = storageAdapter(canvas.id);
+      const annoPage = adapter.all();
+      return annoPage.items.map((item) => item.id);
+    });
+    return annoIds.flat().includes(annotationid);
+  }
+
+  /** */
   render() {
     const { children } = this.props;
     return (
@@ -32,12 +45,14 @@ class CanvasListItem extends Component {
         {...this.props} // eslint-disable-line react/jsx-props-no-spreading
       >
         {children}
-        <MiradorMenuButton
-          aria-label="Delete"
-          onClick={this.handleDelete}
-        >
-          <DeleteIcon />
-        </MiradorMenuButton>
+        {this.editable() && (
+          <MiradorMenuButton
+            aria-label="Delete"
+            onClick={this.handleDelete}
+          >
+            <DeleteIcon />
+          </MiradorMenuButton>
+        )}
       </li>
     );
   }
