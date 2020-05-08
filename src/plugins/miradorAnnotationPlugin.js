@@ -16,14 +16,16 @@ class MiradorAnnotation extends Component {
   /** */
   openCreateAnnotationCompanionWindow(e) {
     const {
-      addCompanionWindow, canvases, receiveAnnotation, config,
+      addCompanionWindow, canvases, receiveAnnotation, config, targetProps,
     } = this.props;
+    const { windowId } = targetProps;
     addCompanionWindow('custom', {
       children: (
         <AnnotationCreation
           canvases={canvases}
           receiveAnnotation={receiveAnnotation}
           config={config}
+          windowId={windowId}
         />
       ),
       position: 'right',

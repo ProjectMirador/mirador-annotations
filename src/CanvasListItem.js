@@ -32,6 +32,7 @@ class CanvasListItem extends Component {
     const annoIds = canvases.map((canvas) => {
       const adapter = storageAdapter(canvas.id);
       const annoPage = adapter.all();
+      if (!annoPage) return [];
       return annoPage.items.map((item) => item.id);
     });
     return annoIds.flat().includes(annotationid);
