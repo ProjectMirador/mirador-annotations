@@ -10,6 +10,7 @@ import { v4 as uuid } from 'uuid';
 import { PaperContainer } from '@psychobolt/react-paperjs';
 import { RectangleTool } from '@psychobolt/react-paperjs-editor';
 import OpenSeadragon from 'openseadragon';
+import WebAnnotation from './WebAnnotation';
 /** */
 class AnnotationCreation extends Component {
   /** */
@@ -40,17 +41,12 @@ class AnnotationCreation extends Component {
 
     canvases.forEach((canvas) => {
       const localStorageAdapter = config.annotation.adapter(canvas.id);
-      const anno = {
-        body: {
-          language: 'en',
-          type: 'TextualBody',
-          value: annoBody,
-        },
+      const anno = new WebAnnotation({
+        body: annoBody,
+        canvasId: canvas.id,
         id: `https://example.org/iiif/book1/page/manifest/${uuid()}`,
-        motivation: 'commenting',
-        target: `${canvas.id}#xywh=${xywh}`,
-        type: 'Annotation',
-      };
+        xywh,
+      }).toJson();
       const newAnnoPage = localStorageAdapter.create(anno);
       receiveAnnotation(canvas.id, localStorageAdapter.annotationPageId, newAnnoPage);
     });
@@ -73,13 +69,16 @@ class AnnotationCreation extends Component {
 
   /** */
   addPath(path) {
-    // console.log(path);
+    console.log(path);
     const { bounds } = path;
     const {
       x, y, width, height,
     } = bounds;
     const point1 = new OpenSeadragon.Point(x, y);
     const point2 = new OpenSeadragon.Point(x + width, y + height);
+    const osdBounds = this.OSDReference.viewer.viewport.getBoundsNoRotate();
+    console.log(osdBounds);
+    console.log(path.project.view.bounds);
     const viewportPoint1 = this.OSDReference.viewer.viewport.pointFromPixel(point1);
     const viewportPoint2 = this.OSDReference.viewer.viewport.pointFromPixel(point2);
     const viewportWidth = viewportPoint2.x - viewportPoint1.x;

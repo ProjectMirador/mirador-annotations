@@ -9,6 +9,10 @@ const config = {
     adapter: (canvasId) => new LocalStorageAdapter(`localStorage://?canvasId=${canvasId}`),
   },
   id: 'demo',
+  window: {
+    defaultSideBarPanel: 'annotations',
+    sideBarOpenByDefault: true,
+  },
   windows: [{
     loadedManifest: 'https://iiif.harvardartmuseums.org/manifests/object/299843',
   }],
