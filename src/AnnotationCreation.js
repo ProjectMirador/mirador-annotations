@@ -9,14 +9,16 @@ import TextField from '@material-ui/core/TextField';
 import { v4 as uuid } from 'uuid';
 import { PaperContainer } from '@psychobolt/react-paperjs';
 import { RectangleTool } from '@psychobolt/react-paperjs-editor';
-import OpenSeadragon from 'openseadragon';
+import { Point } from 'paper';
 import WebAnnotation from './WebAnnotation';
 /** */
 class AnnotationCreation extends Component {
   /** */
   constructor(props) {
     super(props);
-    this.state = { activeTool: null, annoBody: '', xywh: '0,0,1000,1000' };
+    this.state = {
+      activeTool: null, annoBody: '', svg: null, xywh: '0,0,1000,1000',
+    };
 
     this.paperScope = null;
     this.OSDReference = null;
@@ -37,14 +39,14 @@ class AnnotationCreation extends Component {
   submitForm(e) {
     e.preventDefault();
     const { canvases, receiveAnnotation, config } = this.props;
-    const { annoBody, xywh } = this.state;
-
+    const { annoBody, xywh, svg } = this.state;
     canvases.forEach((canvas) => {
       const localStorageAdapter = config.annotation.adapter(canvas.id);
       const anno = new WebAnnotation({
         body: annoBody,
         canvasId: canvas.id,
         id: `https://example.org/iiif/book1/page/manifest/${uuid()}`,
+        svg,
         xywh,
       }).toJson();
       const newAnnoPage = localStorageAdapter.create(anno);
@@ -69,26 +71,20 @@ class AnnotationCreation extends Component {
 
   /** */
   addPath(path) {
-    console.log(path);
     const { bounds } = path;
     const {
       x, y, width, height,
     } = bounds;
-    const point1 = new OpenSeadragon.Point(x, y);
-    const point2 = new OpenSeadragon.Point(x + width, y + height);
-    const osdBounds = this.OSDReference.viewer.viewport.getBoundsNoRotate();
-    console.log(osdBounds);
-    console.log(path.project.view.bounds);
-    const viewportPoint1 = this.OSDReference.viewer.viewport.pointFromPixel(point1);
-    const viewportPoint2 = this.OSDReference.viewer.viewport.pointFromPixel(point2);
-    const viewportWidth = viewportPoint2.x - viewportPoint1.x;
-    const viewportHeight = viewportPoint2.y - viewportPoint1.y;
+
     this.setState({
+      svg: path.exportSVG({
+        asString: true,
+      }),
       xywh: [
-        Math.floor(viewportPoint1.x),
-        Math.floor(viewportPoint1.y),
-        Math.floor(viewportWidth),
-        Math.floor(viewportHeight),
+        Math.floor(x),
+        Math.floor(y),
+        Math.floor(width),
+        Math.floor(height),
       ].join(','),
     });
   }
@@ -97,10 +93,32 @@ class AnnotationCreation extends Component {
   paperThing() {
     const { activeTool } = this.state;
     if (!activeTool) return null;
+    // Setup Paper View to have the same center and zoom as the OSD Viewport
+    const viewportZoom = this.OSDReference.viewer.viewport.getZoom(true);
+    const image1 = this.OSDReference.viewer.world.getItemAt(0);
+    const center = this.OSDReference.viewer.viewport.viewportToImageCoordinates(
+      this.OSDReference.viewer.viewport.getCenter(true),
+    );
+    const viewProps = {
+      center: new Point(center.x, center.y),
+      zoom: image1.viewportToImageZoom(viewportZoom),
+    };
+
     return (
-      <div className="foo" style={{ height: '100%', width: '100%', position: 'absolute', top: 0, left: 0 }}>
-        <PaperContainer canvasProps={{ style: { height: '100%', width: '100%' }}}>
-          <RectangleTool onPathAdd={this.addPath} pathProps={{ fillColor: null, strokeColor: 'blue' }} />
+      <div
+        className="foo"
+        style={{
+          height: '100%', left: 0, position: 'absolute', top: 0, width: '100%',
+        }}
+      >
+        <PaperContainer
+          canvasProps={{ style: { height: '100%', width: '100%' } }}
+          viewProps={viewProps}
+        >
+          <RectangleTool
+            onPathAdd={this.addPath}
+            pathProps={{ fillColor: null, strokeColor: '#00BFFF' }}
+          />
         </PaperContainer>
       </div>
     );

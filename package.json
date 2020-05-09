@@ -22,14 +22,14 @@
   },
   "dependencies": {
     "@psychobolt/react-paperjs": "0.0.56",
-    "@psychobolt/react-paperjs-editor": "0.0.10"
+    "@psychobolt/react-paperjs-editor": "0.0.10",
+    "paper": "^0.12.4"
   },
   "peerDependencies": {
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
     "lodash": "^4.17.11",
     "mirador": "^3.0.0-beta.8",
-    "openseadragon": "^2.4.2",
     "prop-types": "^15.7.2",
     "react": "16.x",
     "react-dom": "16.x",
