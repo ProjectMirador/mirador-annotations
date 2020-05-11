@@ -104,17 +104,15 @@ class AnnotationDrawing extends Component {
     const { windowId } = this.props;
     this.OSDReference = OSDReferences.get(windowId).current;
     return (
-      <>
-        {ReactDOM.createPortal(this.paperThing(), this.OSDReference.viewer.element)}
-      </>
+      ReactDOM.createPortal(this.paperThing(), this.OSDReference.viewer.element)
     );
   }
 }
 
 AnnotationDrawing.propTypes = {
   activeTool: PropTypes.string,
-  updateGeometry: PropTypes.func.isRequired,
   strokeWidth: PropTypes.number,
+  updateGeometry: PropTypes.func.isRequired,
   windowId: PropTypes.string.isRequired,
 };
 
