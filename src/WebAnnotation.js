@@ -31,7 +31,7 @@ export default class WebAnnotation {
     let target = this.canvasId;
     if (this.svg) {
       target = {};
-      target.source = this.canvasId;
+      target.id = this.canvasId;
       target.selector = {
         type: 'SvgSelector',
         value: this.svg,
