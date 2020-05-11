@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
-import { MiradorMenuButton } from 'mirador/dist/es/src/components/MiradorMenuButton';
-import AddBoxIcon from '@material-ui/icons/AddBox';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import RectangleIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import CircleIcon from '@material-ui/icons/RadioButtonUnchecked';
+import PolygonIcon from '@material-ui/icons/Timeline';
 import TextField from '@material-ui/core/TextField';
 import { v4 as uuid } from 'uuid';
 import AnnotationDrawing from './AnnotationDrawing';
@@ -19,7 +22,7 @@ class AnnotationCreation extends Component {
     this.submitForm = this.submitForm.bind(this);
     this.updateBody = this.updateBody.bind(this);
     this.updateGeometry = this.updateGeometry.bind(this);
-    this.addBox = this.addBox.bind(this);
+    this.changeTool = this.changeTool.bind(this);
   }
 
   /** */
@@ -45,9 +48,9 @@ class AnnotationCreation extends Component {
   }
 
   /** */
-  addBox() {
+  changeTool(e, tool) {
     this.setState({
-      activeTool: 'rectangle',
+      activeTool: tool,
     });
   }
 
@@ -77,12 +80,23 @@ class AnnotationCreation extends Component {
           />
         )}
         <form onSubmit={this.submitForm}>
-          <MiradorMenuButton
-            aria-label="Add Box"
-            onClick={this.addBox}
+          <ToggleButtonGroup
+            value={activeTool}
+            exclusive
+            onChange={this.changeTool}
+            aria-label="tool selection"
+            size="small"
           >
-            <AddBoxIcon />
-          </MiradorMenuButton>
+            <ToggleButton value="rectangle" aria-label="add a rectangle">
+              <RectangleIcon />
+            </ToggleButton>
+            <ToggleButton value="circle" aria-label="add a circle">
+              <CircleIcon />
+            </ToggleButton>
+            <ToggleButton value="polygon" aria-label="add a polygon">
+              <PolygonIcon />
+            </ToggleButton>
+          </ToggleButtonGroup>
           <TextField
             multiline
             rows={6}
