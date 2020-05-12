@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { MiradorMenuButton } from 'mirador/dist/es/src/components/MiradorMenuButton';
 import DeleteIcon from '@material-ui/icons/Delete';
+import flatten from 'lodash/flatten';
 import AnnotationActionsContext from './AnnotationActionsContext';
 
 /** */
@@ -35,7 +36,7 @@ class CanvasListItem extends Component {
       if (!annoPage) return [];
       return annoPage.items.map((item) => item.id);
     });
-    return annoIds.flat().includes(annotationid);
+    return flatten(annoIds).includes(annotationid);
   }
 
   /** */
@@ -58,6 +59,14 @@ class CanvasListItem extends Component {
     );
   }
 }
+
+CanvasListItem.propTypes = {
+  annotationid: PropTypes.string.isRequired,
+  children: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.node,
+  ]).isRequired,
+};
 
 CanvasListItem.contextType = AnnotationActionsContext;
 
