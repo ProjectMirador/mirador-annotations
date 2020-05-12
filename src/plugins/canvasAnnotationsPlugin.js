@@ -9,7 +9,9 @@ import AnnotationActionsContext from '../AnnotationActionsContext';
 class CanvasAnnotationsWrapper extends Component {
   /** */
   render() {
-    const { TargetComponent, targetProps } = this.props;
+    const {
+      canvases, config, receiveAnnotation, TargetComponent, targetProps,
+    } = this.props;
     const props = {
       ...targetProps,
       listContainerComponent: CanvasListItem,
@@ -17,9 +19,9 @@ class CanvasAnnotationsWrapper extends Component {
     return (
       <AnnotationActionsContext.Provider
         value={{
-          canvases: this.props.canvases,
-          receiveAnnotation: this.props.receiveAnnotation,
-          storageAdapter: this.props.config.annotation.adapter
+          canvases,
+          receiveAnnotation,
+          storageAdapter: config.annotation.adapter,
         }}
       >
         <TargetComponent
@@ -31,11 +33,24 @@ class CanvasAnnotationsWrapper extends Component {
 }
 
 CanvasAnnotationsWrapper.propTypes = {
+  canvases: PropTypes.arrayOf(
+    PropTypes.shape({ id: PropTypes.string, index: PropTypes.number }),
+  ),
+  config: PropTypes.shape({
+    annotation: PropTypes.shape({
+      adapter: PropTypes.func,
+    }),
+  }).isRequired,
+  receiveAnnotation: PropTypes.func.isRequired,
   TargetComponent: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.node,
   ]).isRequired,
   targetProps: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+};
+
+CanvasAnnotationsWrapper.defaultProps = {
+  canvases: [],
 };
 
 /** */
