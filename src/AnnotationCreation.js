@@ -6,9 +6,9 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import RectangleIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CircleIcon from '@material-ui/icons/RadioButtonUnchecked';
 import PolygonIcon from '@material-ui/icons/Timeline';
-import TextField from '@material-ui/core/TextField';
 import { v4 as uuid } from 'uuid';
 import AnnotationDrawing from './AnnotationDrawing';
+import TextEditor from './TextEditor';
 import WebAnnotation from './WebAnnotation';
 /** */
 class AnnotationCreation extends Component {
@@ -58,8 +58,8 @@ class AnnotationCreation extends Component {
   }
 
   /** */
-  updateBody(e) {
-    this.setState({ annoBody: e.target.value });
+  updateBody(annoBody) {
+    this.setState({ annoBody });
   }
 
   /** */
@@ -72,7 +72,7 @@ class AnnotationCreation extends Component {
   /** */
   render() {
     const { parentactions, windowId } = this.props;
-    const { activeTool, annoBody } = this.state;
+    const { activeTool } = this.state;
     return (
       <div>
         { activeTool && (
@@ -100,11 +100,8 @@ class AnnotationCreation extends Component {
               <PolygonIcon />
             </ToggleButton>
           </ToggleButtonGroup>
-          <TextField
-            multiline
-            rows={6}
-            value={annoBody}
-            onChange={this.updateBody}
+          <TextEditor
+            updateAnnotationBody={this.updateBody}
           />
           <Button onClick={parentactions.closeCompanionWindow}>
             Cancel

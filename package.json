@@ -23,6 +23,8 @@
   "dependencies": {
     "@psychobolt/react-paperjs": "0.0.56",
     "@psychobolt/react-paperjs-editor": "0.0.10",
+    "draft-js": "^0.11.5",
+    "draft-js-export-html": "^1.4.1",
     "paper": "^0.12.4"
   },
   "peerDependencies": {
