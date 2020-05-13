@@ -28,7 +28,9 @@ class AnnotationCreation extends Component {
   /** */
   submitForm(e) {
     e.preventDefault();
-    const { canvases, receiveAnnotation, config } = this.props;
+    const {
+      canvases, parentactions, receiveAnnotation, config,
+    } = this.props;
     const { annoBody, xywh, svg } = this.state;
     canvases.forEach((canvas) => {
       const localStorageAdapter = config.annotation.adapter(canvas.id);
@@ -45,6 +47,7 @@ class AnnotationCreation extends Component {
     this.setState({
       activeTool: null,
     });
+    parentactions.closeCompanionWindow();
   }
 
   /** */
@@ -68,7 +71,7 @@ class AnnotationCreation extends Component {
 
   /** */
   render() {
-    const { windowId } = this.props;
+    const { parentactions, windowId } = this.props;
     const { activeTool, annoBody } = this.state;
     return (
       <div>
@@ -103,7 +106,7 @@ class AnnotationCreation extends Component {
             value={annoBody}
             onChange={this.updateBody}
           />
-          <Button>
+          <Button onClick={parentactions.closeCompanionWindow}>
             Cancel
           </Button>
           <Button variant="contained" color="primary" type="submit">
@@ -124,12 +127,16 @@ AnnotationCreation.propTypes = {
       adapter: PropTypes.func,
     }),
   }).isRequired,
+  parentactions: PropTypes.shape({
+    closeCompanionWindow: PropTypes.func,
+  }),
   receiveAnnotation: PropTypes.func.isRequired,
   windowId: PropTypes.string.isRequired,
 };
 
 AnnotationCreation.defaultProps = {
   canvases: [],
+  parentactions: {},
 };
 
 
