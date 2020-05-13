@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Button from '@material-ui/core/Button';
+import { MiradorMenuButton } from 'mirador/dist/es/src/components/MiradorMenuButton';
 import miradorAnnotationPlugin from '../src/plugins/miradorAnnotationPlugin';
 import AnnotationCreation from '../src/AnnotationCreation';
 
@@ -20,14 +20,14 @@ describe('MiradorAnnotation', () => {
   let wrapper;
   it('renders a create new button', () => {
     wrapper = createWrapper();
-    expect(wrapper.find(Button).text()).toBe('Create New');
+    expect(wrapper.find(MiradorMenuButton).props()['aria-label']).toBe('Create new annotation');
   });
   it('opens a new companionWindow when clicked', () => {
     const mockAddCompanionWindow = jest.fn();
     wrapper = createWrapper({
       addCompanionWindow: mockAddCompanionWindow,
     });
-    wrapper.find(Button).simulate('click');
+    wrapper.find(MiradorMenuButton).simulate('click');
     expect(mockAddCompanionWindow).toHaveBeenCalledWith(
       'custom',
       {

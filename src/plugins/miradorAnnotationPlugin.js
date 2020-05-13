@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as actions from 'mirador/dist/es/src/state/actions';
-import Button from '@material-ui/core/Button';
+import AddBoxIcon from '@material-ui/icons/AddBox';
+import { MiradorMenuButton } from 'mirador/dist/es/src/components/MiradorMenuButton';
 import { getVisibleCanvases } from 'mirador/dist/es/src/state/selectors/canvases';
 import AnnotationCreation from '../AnnotationCreation';
 
@@ -42,9 +43,12 @@ class MiradorAnnotation extends Component {
           {...targetProps} // eslint-disable-line react/jsx-props-no-spreading
         />
         <div>
-          <Button variant="contained" color="primary" size="small" onClick={this.openCreateAnnotationCompanionWindow}>
-            Create New
-          </Button>
+          <MiradorMenuButton
+            aria-label="Create new annotation"
+            onClick={this.openCreateAnnotationCompanionWindow}
+          >
+            <AddBoxIcon />
+          </MiradorMenuButton>
         </div>
       </div>
     );
