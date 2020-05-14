@@ -13,19 +13,22 @@ import FormatColorFillIcon from '@material-ui/icons/FormatColorFill';
 import StrokeColorIcon from '@material-ui/icons/BorderColor';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import Popover from '@material-ui/core/Popover';
+import Divider from '@material-ui/core/Divider';
 import { SketchPicker } from 'react-color';
 import { v4 as uuid } from 'uuid';
 import { withStyles } from '@material-ui/core/styles';
 import AnnotationDrawing from './AnnotationDrawing';
 import TextEditor from './TextEditor';
 import WebAnnotation from './WebAnnotation';
+import CursorIcon from './icons/Cursor';
+
 /** */
 class AnnotationCreation extends Component {
   /** */
   constructor(props) {
     super(props);
     this.state = {
-      activeTool: null,
+      activeTool: 'cursor',
       annoBody: '',
       colorPopoverOpen: false,
       currentColorType: false,
@@ -123,15 +126,13 @@ class AnnotationCreation extends Component {
     } = this.state;
     return (
       <Paper className={classes.root}>
-        { activeTool && (
-          <AnnotationDrawing
-            activeTool={activeTool}
-            fillColor={fillColor}
-            strokeColor={strokeColor}
-            updateGeometry={this.updateGeometry}
-            windowId={windowId}
-          />
-        )}
+        <AnnotationDrawing
+          activeTool={activeTool}
+          fillColor={fillColor}
+          strokeColor={strokeColor}
+          updateGeometry={this.updateGeometry}
+          windowId={windowId}
+        />
         <form onSubmit={this.submitForm}>
           <Grid container>
             <Grid item xs={12}>
@@ -140,23 +141,39 @@ class AnnotationCreation extends Component {
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <ToggleButtonGroup
-                value={activeTool}
-                exclusive
-                onChange={this.changeTool}
-                aria-label="tool selection"
-                size="small"
-              >
-                <ToggleButton value="rectangle" aria-label="add a rectangle">
-                  <RectangleIcon />
-                </ToggleButton>
-                <ToggleButton value="circle" aria-label="add a circle">
-                  <CircleIcon />
-                </ToggleButton>
-                <ToggleButton value="polygon" aria-label="add a polygon">
-                  <PolygonIcon />
-                </ToggleButton>
-              </ToggleButtonGroup>
+              <Paper elevation={0} className={classes.paper}>
+                <ToggleButtonGroup
+                  className={classes.grouped}
+                  value={activeTool}
+                  exclusive
+                  onChange={this.changeTool}
+                  aria-label="tool selection"
+                  size="small"
+                >
+                  <ToggleButton value="cursor" aria-label="select cursor">
+                    <CursorIcon />
+                  </ToggleButton>
+                </ToggleButtonGroup>
+                <Divider flexItem orientation="vertical" className={classes.divider} />
+                <ToggleButtonGroup
+                  className={classes.grouped}
+                  value={activeTool}
+                  exclusive
+                  onChange={this.changeTool}
+                  aria-label="tool selection"
+                  size="small"
+                >
+                  <ToggleButton value="rectangle" aria-label="add a rectangle">
+                    <RectangleIcon />
+                  </ToggleButton>
+                  <ToggleButton value="circle" aria-label="add a circle">
+                    <CircleIcon />
+                  </ToggleButton>
+                  <ToggleButton value="polygon" aria-label="add a polygon">
+                    <PolygonIcon />
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </Paper>
             </Grid>
           </Grid>
           <Grid container>
@@ -226,6 +243,23 @@ class AnnotationCreation extends Component {
 
 /** */
 const styles = (theme) => ({
+  divider: {
+    margin: theme.spacing(1, 0.5),
+  },
+  grouped: {
+    '&:first-child': {
+      borderRadius: theme.shape.borderRadius,
+    },
+    '&:not(:first-child)': {
+      borderRadius: theme.shape.borderRadius,
+    },
+    border: 'none',
+    margin: theme.spacing(0.5),
+  },
+  paper: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
   root: {
     padding: theme.spacing(1),
   },
@@ -235,9 +269,7 @@ AnnotationCreation.propTypes = {
   canvases: PropTypes.arrayOf(
     PropTypes.shape({ id: PropTypes.string, index: PropTypes.number }),
   ),
-  classes: PropTypes.shape({
-    root: PropTypes.string,
-  }).isRequired,
+  classes: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   config: PropTypes.shape({
     annotation: PropTypes.shape({
       adapter: PropTypes.func,

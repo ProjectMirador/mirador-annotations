@@ -24,17 +24,16 @@ class AnnotationDrawing extends Component {
   /** */
   addPath(path) {
     const { strokeWidth, updateGeometry } = this.props;
+    // TODO: Compute xywh of bounding container of layers
     const { bounds } = path;
     const {
       x, y, width, height,
     } = bounds;
 
     // Reset strokeWidth for persistence
-    const pathClone = path.clone();
-    pathClone.strokeWidth = strokeWidth; // eslint-disable-line no-param-reassign
-
+    path.strokeWidth = strokeWidth; // eslint-disable-line no-param-reassign
     updateGeometry({
-      svg: pathClone.exportSVG({
+      svg: path.project.exportSVG({
         asString: true,
       }),
       xywh: [
@@ -52,7 +51,7 @@ class AnnotationDrawing extends Component {
     const {
       activeTool, fillColor, strokeColor, strokeWidth,
     } = this.props;
-    if (!activeTool) return null;
+    if (!activeTool || activeTool === 'cursor') return null;
     // Setup Paper View to have the same center and zoom as the OSD Viewport
     const viewportZoom = this.OSDReference.viewer.viewport.getZoom(true);
     const image1 = this.OSDReference.viewer.world.getItemAt(0);
