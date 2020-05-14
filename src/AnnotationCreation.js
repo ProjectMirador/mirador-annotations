@@ -11,9 +11,13 @@ import CircleIcon from '@material-ui/icons/RadioButtonUnchecked';
 import PolygonIcon from '@material-ui/icons/Timeline';
 import FormatColorFillIcon from '@material-ui/icons/FormatColorFill';
 import StrokeColorIcon from '@material-ui/icons/BorderColor';
+import LineWeightIcon from '@material-ui/icons/LineWeight';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import Popover from '@material-ui/core/Popover';
 import Divider from '@material-ui/core/Divider';
+import MenuItem from '@material-ui/core/MenuItem';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import MenuList from '@material-ui/core/MenuList';
 import { SketchPicker } from 'react-color';
 import { v4 as uuid } from 'uuid';
 import { withStyles } from '@material-ui/core/styles';
@@ -33,8 +37,11 @@ class AnnotationCreation extends Component {
       colorPopoverOpen: false,
       currentColorType: false,
       fillColor: null,
+      lineWeightPopoverOpen: false,
       popoverAnchorEl: null,
+      popoverLineWeightAnchorEl: null,
       strokeColor: '#00BFFF',
+      strokeWidth: 1,
       svg: null,
       xywh: null,
     };
@@ -44,6 +51,9 @@ class AnnotationCreation extends Component {
     this.updateGeometry = this.updateGeometry.bind(this);
     this.changeTool = this.changeTool.bind(this);
     this.openChooseColor = this.openChooseColor.bind(this);
+    this.openChooseLineWeight = this.openChooseLineWeight.bind(this);
+    this.handleLineWeightSelect = this.handleLineWeightSelect.bind(this);
+    this.handleCloseLineWeight = this.handleCloseLineWeight.bind(this);
     this.closeChooseColor = this.closeChooseColor.bind(this);
     this.updateStrokeColor = this.updateStrokeColor.bind(this);
   }
@@ -54,6 +64,31 @@ class AnnotationCreation extends Component {
       colorPopoverOpen: true,
       currentColorType: e.currentTarget.value,
       popoverAnchorEl: e.currentTarget,
+    });
+  }
+
+  /** */
+  openChooseLineWeight(e) {
+    this.setState({
+      lineWeightPopoverOpen: true,
+      popoverLineWeightAnchorEl: e.currentTarget,
+    });
+  }
+
+  /** */
+  handleLineWeightSelect(e) {
+    this.setState({
+      lineWeightPopoverOpen: false,
+      popoverLineWeightAnchorEl: null,
+      strokeWidth: e.currentTarget.value,
+    });
+  }
+
+  /** */
+  handleCloseLineWeight(e) {
+    this.setState({
+      lineWeightPopoverOpen: false,
+      popoverLineWeightAnchorEl: null,
     });
   }
 
@@ -123,6 +158,7 @@ class AnnotationCreation extends Component {
     const { classes, parentactions, windowId } = this.props;
     const {
       activeTool, colorPopoverOpen, currentColorType, fillColor, popoverAnchorEl, strokeColor,
+      popoverLineWeightAnchorEl, lineWeightPopoverOpen, strokeWidth,
     } = this.state;
     return (
       <Paper className={classes.root}>
@@ -130,6 +166,7 @@ class AnnotationCreation extends Component {
           activeTool={activeTool}
           fillColor={fillColor}
           strokeColor={strokeColor}
+          strokeWidth={strokeWidth}
           updateGeometry={this.updateGeometry}
           windowId={windowId}
         />
@@ -196,6 +233,14 @@ class AnnotationCreation extends Component {
                   <ArrowDropDownIcon />
                 </ToggleButton>
                 <ToggleButton
+                  value="strokeColor"
+                  aria-label="select line weight"
+                  onClick={this.openChooseLineWeight}
+                >
+                  <LineWeightIcon />
+                  <ArrowDropDownIcon />
+                </ToggleButton>
+                <ToggleButton
                   value="fillColor"
                   aria-label="select color"
                   onClick={this.openChooseColor}
@@ -225,6 +270,26 @@ class AnnotationCreation extends Component {
             Save
           </Button>
         </form>
+        <Popover
+          open={lineWeightPopoverOpen}
+          anchorEl={popoverLineWeightAnchorEl}
+        >
+          <Paper>
+            <ClickAwayListener onClickAway={this.handleCloseLineWeight}>
+              <MenuList>
+                {[1, 3, 5, 10, 50].map((option, index) => (
+                  <MenuItem
+                    key={option}
+                    onClick={this.handleLineWeightSelect}
+                    value={option}
+                  >
+                    {option}
+                  </MenuItem>
+                ))}
+              </MenuList>
+            </ClickAwayListener>
+          </Paper>
+        </Popover>
         <Popover
           open={colorPopoverOpen}
           anchorEl={popoverAnchorEl}

@@ -5,6 +5,7 @@ import { OSDReferences } from 'mirador/dist/es/src/plugins/OSDReferences';
 import { renderWithPaperScope, PaperContainer } from '@psychobolt/react-paperjs';
 import { CircleTool, PolygonTool, RectangleTool } from '@psychobolt/react-paperjs-editor';
 import { Point } from 'paper';
+import flatten from 'lodash/flatten';
 
 /** */
 class AnnotationDrawing extends Component {
@@ -32,10 +33,15 @@ class AnnotationDrawing extends Component {
 
     // Reset strokeWidth for persistence
     path.strokeWidth = strokeWidth; // eslint-disable-line no-param-reassign
+    const svgExports = flatten(path.project.layers.map((layer) => (
+      layer.children.map((child) => (
+        child.exportSVG({ asString: true })
+      ))
+    )));
+    svgExports.unshift("<svg xmlns='http://www.w3.org/2000/svg'>");
+    svgExports.push('</svg>');
     updateGeometry({
-      svg: path.project.exportSVG({
-        asString: true,
-      }),
+      svg: svgExports.join(''),
       xywh: [
         Math.floor(x),
         Math.floor(y),
