@@ -9,6 +9,10 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import RectangleIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CircleIcon from '@material-ui/icons/RadioButtonUnchecked';
 import PolygonIcon from '@material-ui/icons/Timeline';
+import FormatColorFillIcon from '@material-ui/icons/FormatColorFill';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import Popover from '@material-ui/core/Popover';
+import { SketchPicker } from 'react-color';
 import { v4 as uuid } from 'uuid';
 import { withStyles } from '@material-ui/core/styles';
 import AnnotationDrawing from './AnnotationDrawing';
@@ -20,13 +24,39 @@ class AnnotationCreation extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeTool: null, annoBody: '', svg: null, xywh: null,
+      activeTool: null, annoBody: '', colorPopoverOpen: false, popoverAnchorEl: null, svg: null, xywh: null,
     };
 
     this.submitForm = this.submitForm.bind(this);
     this.updateBody = this.updateBody.bind(this);
     this.updateGeometry = this.updateGeometry.bind(this);
     this.changeTool = this.changeTool.bind(this);
+    this.openChooseColor = this.openChooseColor.bind(this);
+    this.closeChooseColor = this.closeChooseColor.bind(this);
+    this.updateStrokeColor = this.updateStrokeColor.bind(this);
+  }
+
+  /** */
+  openChooseColor(e) {
+    this.setState({
+      colorPopoverOpen: true,
+      popoverAnchorEl: e.currentTarget,
+    });
+  }
+
+  /** */
+  closeChooseColor(e) {
+    this.setState({
+      colorPopoverOpen: false,
+      popoverAnchorEl: null,
+    });
+  }
+
+  /** */
+  updateStrokeColor(color) {
+    this.setState({
+      strokeColor: color.hex,
+    });
   }
 
   /** */
@@ -76,12 +106,15 @@ class AnnotationCreation extends Component {
   /** */
   render() {
     const { classes, parentactions, windowId } = this.props;
-    const { activeTool } = this.state;
+    const {
+      activeTool, colorPopoverOpen, popoverAnchorEl, strokeColor,
+    } = this.state;
     return (
       <Paper className={classes.root}>
         { activeTool && (
           <AnnotationDrawing
             activeTool={activeTool}
+            strokeColor={strokeColor}
             updateGeometry={this.updateGeometry}
             windowId={windowId}
           />
@@ -119,6 +152,21 @@ class AnnotationCreation extends Component {
                 Style
               </Typography>
             </Grid>
+            <Grid item xs={12}>
+              <ToggleButtonGroup
+                aria-label="style selection"
+                size="small"
+              >
+                <ToggleButton
+                  value="color"
+                  aria-label="select color"
+                  onClick={this.openChooseColor}
+                >
+                  <FormatColorFillIcon style={{ fill: strokeColor }} />
+                  <ArrowDropDownIcon />
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Grid>
           </Grid>
           <Grid container>
             <Grid item xs={12}>
@@ -139,6 +187,16 @@ class AnnotationCreation extends Component {
             Save
           </Button>
         </form>
+        <Popover
+          open={colorPopoverOpen}
+          anchorEl={popoverAnchorEl}
+          onClose={this.closeChooseColor}
+        >
+          <SketchPicker
+            color={strokeColor}
+            onChangeComplete={this.updateStrokeColor}
+          />
+        </Popover>
       </Paper>
     );
   }

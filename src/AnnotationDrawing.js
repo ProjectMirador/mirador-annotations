@@ -49,7 +49,7 @@ class AnnotationDrawing extends Component {
 
   /** */
   paperThing() {
-    const { activeTool, strokeWidth } = this.props;
+    const { activeTool, strokeColor, strokeWidth } = this.props;
     if (!activeTool) return null;
     // Setup Paper View to have the same center and zoom as the OSD Viewport
     const viewportZoom = this.OSDReference.viewer.viewport.getZoom(true);
@@ -91,7 +91,11 @@ class AnnotationDrawing extends Component {
           {renderWithPaperScope((paper) => (
             <ActiveTool
               onPathAdd={this.addPath}
-              pathProps={{ fillColor: null, strokeColor: '#00BFFF', strokeWidth: strokeWidth / paper.view.zoom }}
+              pathProps={{
+                fillColor: null,
+                strokeColor,
+                strokeWidth: strokeWidth / paper.view.zoom,
+              }}
             />
           ))}
         </PaperContainer>
@@ -111,6 +115,7 @@ class AnnotationDrawing extends Component {
 
 AnnotationDrawing.propTypes = {
   activeTool: PropTypes.string,
+  strokeColor: PropTypes.string,
   strokeWidth: PropTypes.number,
   updateGeometry: PropTypes.func.isRequired,
   windowId: PropTypes.string.isRequired,
@@ -118,6 +123,7 @@ AnnotationDrawing.propTypes = {
 
 AnnotationDrawing.defaultProps = {
   activeTool: null,
+  strokeColor: '#00BFFF',
   strokeWidth: 1,
 };
 

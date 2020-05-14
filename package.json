@@ -25,7 +25,9 @@
     "@psychobolt/react-paperjs-editor": "0.0.10",
     "draft-js": "^0.11.5",
     "draft-js-export-html": "^1.4.1",
-    "paper": "^0.12.4"
+    "material-ui-color-components": "^0.3.0",
+    "paper": "^0.12.4",
+    "react-color": "^2.18.1"
   },
   "peerDependencies": {
     "@material-ui/core": "^4.9.13",
