@@ -5,6 +5,7 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import BoldIcon from '@material-ui/icons/FormatBold';
 import ItalicIcon from '@material-ui/icons/FormatItalic';
+import { withStyles } from '@material-ui/core/styles';
 import { stateToHTML } from 'draft-js-export-html';
 
 /** */
@@ -22,7 +23,6 @@ class TextEditor extends Component {
   onChange(editorState) {
     const { updateAnnotationBody } = this.props;
     this.setState({ editorState });
-    console.log(this.props);
     if (updateAnnotationBody) {
       const options = {
         inlineStyles: {
@@ -52,6 +52,7 @@ class TextEditor extends Component {
 
   /** */
   render() {
+    const { classes } = this.props;
     const { editorState } = this.state;
     const currentStyle = editorState.getCurrentInlineStyle();
     return (
@@ -73,17 +74,37 @@ class TextEditor extends Component {
             <ItalicIcon />
           </ToggleButton>
         </ToggleButtonGroup>
-        <Editor
-          editorState={editorState}
-          handleKeyCommand={this.handleKeyCommand}
-          onChange={this.onChange}
-        />
+        <div className={classes.editorRoot}>
+          <Editor
+            editorState={editorState}
+            handleKeyCommand={this.handleKeyCommand}
+            onChange={this.onChange}
+          />
+        </div>
       </div>
     );
   }
 }
 
+/** */
+const styles = (theme) => ({
+  editorRoot: {
+    borderColor: theme.palette.type === 'light' ? 'rgba(0, 0, 0, 0.23)' : 'rgba(255, 255, 255, 0.23)',
+    borderRadius: theme.shape.borderRadius,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    fontFamily: theme.typography.fontFamily,
+    marginBottom: theme.spacing(1),
+    marginTop: theme.spacing(1),
+    minHeight: theme.typography.fontSize * 6,
+    padding: theme.spacing(1),
+  },
+});
+
 TextEditor.propTypes = {
+  classes: PropTypes.shape({
+    editorRoot: PropTypes.string,
+  }).isRequired,
   updateAnnotationBody: PropTypes.func,
 };
 
@@ -91,4 +112,4 @@ TextEditor.defaultProps = {
   updateAnnotationBody: () => {},
 };
 
-export default TextEditor;
+export default withStyles(styles)(TextEditor);
