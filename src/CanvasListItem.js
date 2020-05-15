@@ -40,7 +40,6 @@ class CanvasListItem extends Component {
       annotation = localStorageAdapter.get(annotationid);
       return (annotation);
     });
-    console.log(annotation);
     addCompanionWindow('custom', {
       children: (
         <AnnotationCreation
