@@ -34,9 +34,10 @@ class AnnotationDrawing extends Component {
     // Reset strokeWidth for persistence
     path.strokeWidth = strokeWidth; // eslint-disable-line no-param-reassign
     const svgExports = flatten(path.project.layers.map((layer) => (
-      layer.children.map((child) => (
-        child.exportSVG({ asString: true })
-      ))
+      layer.children.map((child) => {
+        child.strokeWidth = strokeWidth; // eslint-disable-line no-param-reassign
+        return child.exportSVG({ asString: true });
+      })
     )));
     svgExports.unshift("<svg xmlns='http://www.w3.org/2000/svg'>");
     svgExports.push('</svg>');
