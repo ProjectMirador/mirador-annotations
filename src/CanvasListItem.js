@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { MiradorMenuButton } from 'mirador/dist/es/src/components/MiradorMenuButton';
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@material-ui/icons/DeleteForever';
 import EditIcon from '@material-ui/icons/Edit';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import flatten from 'lodash/flatten';
 import AnnotationActionsContext from './AnnotationActionsContext';
 import AnnotationCreation from './AnnotationCreation';
@@ -13,6 +14,11 @@ class CanvasListItem extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      isHovering: false,
+    };
+
+    this.handleMouseHover = this.handleMouseHover.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleEdit = this.handleEdit.bind(this);
   }
@@ -56,6 +62,13 @@ class CanvasListItem extends Component {
   }
 
   /** */
+  handleMouseHover() {
+    this.setState((prevState) => ({
+      isHovering: !prevState.isHovering,
+    }));
+  }
+
+  /** */
   editable() {
     const { canvases, storageAdapter } = this.context;
     const { annotationid } = this.props;
@@ -72,28 +85,43 @@ class CanvasListItem extends Component {
   /** */
   render() {
     const { children } = this.props;
+    const { isHovering } = this.state;
     return (
-      <li
-        {...this.props} // eslint-disable-line react/jsx-props-no-spreading
+      <div
+        onMouseEnter={this.handleMouseHover}
+        onMouseLeave={this.handleMouseHover}
       >
-        {children}
-        {this.editable() && (
-          <div>
-            <MiradorMenuButton
-              aria-label="Edit"
-              onClick={this.handleEdit}
+        {isHovering && this.editable() && (
+          <div
+            style={{
+              position: 'relative',
+              top: -20,
+              zIndex: 10000,
+            }}
+          >
+            <ToggleButtonGroup
+              aria-label="annotation tools"
+              size="small"
+              style={{
+                position: 'absolute',
+                right: 0,
+              }}
             >
-              <EditIcon />
-            </MiradorMenuButton>
-            <MiradorMenuButton
-              aria-label="Delete"
-              onClick={this.handleDelete}
-            >
-              <DeleteIcon />
-            </MiradorMenuButton>
+              <ToggleButton aria-label="Edit" onClick={this.handleEdit}>
+                <EditIcon />
+              </ToggleButton>
+              <ToggleButton aria-label="Delete" onClick={this.handleDelete}>
+                <DeleteIcon />
+              </ToggleButton>
+            </ToggleButtonGroup>
           </div>
         )}
-      </li>
+        <li
+          {...this.props} // eslint-disable-line react/jsx-props-no-spreading
+        >
+          {children}
+        </li>
+      </div>
     );
   }
 }
