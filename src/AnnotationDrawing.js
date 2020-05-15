@@ -55,7 +55,7 @@ class AnnotationDrawing extends Component {
   /** */
   paperThing() {
     const {
-      activeTool, fillColor, strokeColor, strokeWidth,
+      activeTool, fillColor, strokeColor, strokeWidth, svg,
     } = this.props;
     if (!activeTool || activeTool === 'cursor') return null;
     // Setup Paper View to have the same center and zoom as the OSD Viewport
@@ -95,16 +95,21 @@ class AnnotationDrawing extends Component {
           canvasProps={{ style: { height: '100%', width: '100%' } }}
           viewProps={viewProps}
         >
-          {renderWithPaperScope((paper) => (
-            <ActiveTool
-              onPathAdd={this.addPath}
-              pathProps={{
-                fillColor,
-                strokeColor,
-                strokeWidth: strokeWidth / paper.view.zoom,
-              }}
-            />
-          ))}
+          {renderWithPaperScope((paper) => {
+            if (svg) {
+              paper.project.importSVG(svg);
+            }
+            return (
+              <ActiveTool
+                onPathAdd={this.addPath}
+                pathProps={{
+                  fillColor,
+                  strokeColor,
+                  strokeWidth: strokeWidth / paper.view.zoom,
+                }}
+              />
+            );
+          })}
         </PaperContainer>
       </div>
     );
@@ -125,6 +130,7 @@ AnnotationDrawing.propTypes = {
   fillColor: PropTypes.string,
   strokeColor: PropTypes.string,
   strokeWidth: PropTypes.number,
+  svg: PropTypes.string,
   updateGeometry: PropTypes.func.isRequired,
   windowId: PropTypes.string.isRequired,
 };
@@ -134,6 +140,7 @@ AnnotationDrawing.defaultProps = {
   fillColor: null,
   strokeColor: '#00BFFF',
   strokeWidth: 1,
+  svg: null,
 };
 
 

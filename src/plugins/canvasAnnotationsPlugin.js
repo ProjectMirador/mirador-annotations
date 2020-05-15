@@ -10,7 +10,8 @@ class CanvasAnnotationsWrapper extends Component {
   /** */
   render() {
     const {
-      canvases, config, receiveAnnotation, TargetComponent, targetProps,
+      addCompanionWindow, canvases, config, receiveAnnotation, TargetComponent,
+      targetProps,
     } = this.props;
     const props = {
       ...targetProps,
@@ -19,9 +20,12 @@ class CanvasAnnotationsWrapper extends Component {
     return (
       <AnnotationActionsContext.Provider
         value={{
+          addCompanionWindow,
           canvases,
+          config,
           receiveAnnotation,
           storageAdapter: config.annotation.adapter,
+          windowId: targetProps.windowId,
         }}
       >
         <TargetComponent
@@ -33,6 +37,7 @@ class CanvasAnnotationsWrapper extends Component {
 }
 
 CanvasAnnotationsWrapper.propTypes = {
+  addCompanionWindow: PropTypes.func.isRequired,
   canvases: PropTypes.arrayOf(
     PropTypes.shape({ id: PropTypes.string, index: PropTypes.number }),
   ),
@@ -63,6 +68,9 @@ function mapStateToProps(state, { targetProps }) {
 
 /** */
 const mapDispatchToProps = (dispatch, props) => ({
+  addCompanionWindow: (content, additionalProps) => dispatch(
+    actions.addCompanionWindow(props.targetProps.windowId, { content, ...additionalProps }),
+  ),
   receiveAnnotation: (targetId, id, annotation) => dispatch(
     actions.receiveAnnotation(targetId, id, annotation),
   ),

@@ -31,6 +31,11 @@ class AnnotationCreation extends Component {
   /** */
   constructor(props) {
     super(props);
+    const annoState = {};
+    if (props.annotation) {
+      annoState.annoBody = props.annotation.body.value;
+      annoState.svg = props.annotation.target.selector.value;
+    }
     this.state = {
       activeTool: 'cursor',
       annoBody: '',
@@ -44,6 +49,7 @@ class AnnotationCreation extends Component {
       strokeWidth: 1,
       svg: null,
       xywh: null,
+      ...annoState,
     };
 
     this.submitForm = this.submitForm.bind(this);
@@ -113,7 +119,7 @@ class AnnotationCreation extends Component {
   submitForm(e) {
     e.preventDefault();
     const {
-      canvases, parentactions, receiveAnnotation, config,
+      annotation, canvases, parentactions, receiveAnnotation, config,
     } = this.props;
     const { annoBody, xywh, svg } = this.state;
     canvases.forEach((canvas) => {
@@ -121,11 +127,16 @@ class AnnotationCreation extends Component {
       const anno = new WebAnnotation({
         body: annoBody,
         canvasId: canvas.id,
-        id: `https://example.org/iiif/book1/page/manifest/${uuid()}`,
+        id: (annotation && annotation.id) || `https://example.org/iiif/book1/page/manifest/${uuid()}`,
         svg,
         xywh,
       }).toJson();
-      const newAnnoPage = localStorageAdapter.create(anno);
+      let newAnnoPage;
+      if (annotation) {
+        newAnnoPage = localStorageAdapter.update(anno);
+      } else {
+        newAnnoPage = localStorageAdapter.create(anno);
+      }
       receiveAnnotation(canvas.id, localStorageAdapter.annotationPageId, newAnnoPage);
     });
     this.setState({
@@ -158,7 +169,7 @@ class AnnotationCreation extends Component {
     const { classes, parentactions, windowId } = this.props;
     const {
       activeTool, colorPopoverOpen, currentColorType, fillColor, popoverAnchorEl, strokeColor,
-      popoverLineWeightAnchorEl, lineWeightPopoverOpen, strokeWidth,
+      popoverLineWeightAnchorEl, lineWeightPopoverOpen, strokeWidth, annoBody, svg,
     } = this.state;
     return (
       <Paper className={classes.root}>
@@ -167,6 +178,7 @@ class AnnotationCreation extends Component {
           fillColor={fillColor}
           strokeColor={strokeColor}
           strokeWidth={strokeWidth}
+          svg={svg}
           updateGeometry={this.updateGeometry}
           windowId={windowId}
         />
@@ -259,6 +271,7 @@ class AnnotationCreation extends Component {
             </Grid>
             <Grid item xs={12}>
               <TextEditor
+                annoHtml={annoBody}
                 updateAnnotationBody={this.updateBody}
               />
             </Grid>
@@ -331,6 +344,7 @@ const styles = (theme) => ({
 });
 
 AnnotationCreation.propTypes = {
+  annotation: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   canvases: PropTypes.arrayOf(
     PropTypes.shape({ id: PropTypes.string, index: PropTypes.number }),
   ),
@@ -348,6 +362,7 @@ AnnotationCreation.propTypes = {
 };
 
 AnnotationCreation.defaultProps = {
+  annotation: null,
   canvases: [],
   parentactions: {},
 };

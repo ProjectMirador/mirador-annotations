@@ -7,13 +7,16 @@ import BoldIcon from '@material-ui/icons/FormatBold';
 import ItalicIcon from '@material-ui/icons/FormatItalic';
 import { withStyles } from '@material-ui/core/styles';
 import { stateToHTML } from 'draft-js-export-html';
+import { stateFromHTML } from 'draft-js-import-html';
 
 /** */
 class TextEditor extends Component {
   /** */
   constructor(props) {
     super(props);
-    this.state = { editorState: EditorState.createEmpty() };
+    this.state = {
+      editorState: EditorState.createWithContent(stateFromHTML(props.annoHtml)),
+    };
     this.onChange = this.onChange.bind(this);
     this.handleKeyCommand = this.handleKeyCommand.bind(this);
     this.handleFormating = this.handleFormating.bind(this);
@@ -102,6 +105,7 @@ const styles = (theme) => ({
 });
 
 TextEditor.propTypes = {
+  annoHtml: PropTypes.string,
   classes: PropTypes.shape({
     editorRoot: PropTypes.string,
   }).isRequired,
@@ -109,6 +113,7 @@ TextEditor.propTypes = {
 };
 
 TextEditor.defaultProps = {
+  annoHtml: '',
   updateAnnotationBody: () => {},
 };
 
