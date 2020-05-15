@@ -31,13 +31,18 @@ class AnnotationDrawing extends Component {
       x, y, width, height,
     } = bounds;
 
+    /** */
+    function mapChildren(layerThing) {
+      if (layerThing.children) {
+        return flatten(layerThing.children.map((child) => mapChildren(child)));
+      }
+      return layerThing;
+    }
+
     // Reset strokeWidth for persistence
     path.strokeWidth = strokeWidth; // eslint-disable-line no-param-reassign
     const svgExports = flatten(path.project.layers.map((layer) => (
-      layer.children.map((child) => {
-        child.strokeWidth = strokeWidth; // eslint-disable-line no-param-reassign
-        return child.exportSVG({ asString: true });
-      })
+      flatten(mapChildren(layer)).map((aPath) => aPath.exportSVG({ asString: true }))
     )));
     svgExports.unshift("<svg xmlns='http://www.w3.org/2000/svg'>");
     svgExports.push('</svg>');
