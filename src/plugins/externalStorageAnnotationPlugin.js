@@ -34,10 +34,11 @@ class ExternalStorageAnnotation extends Component {
 
     canvases.forEach((canvas) => {
       const storageAdapter = config.annotation.adapter(canvas.id);
-      const annoPage = storageAdapter.all();
-      if (annoPage) {
-        receiveAnnotation(canvas.id, storageAdapter.annotationPageId, annoPage);
-      }
+      storageAdapter.all().then((annoPage) => {
+        if (annoPage) {
+          receiveAnnotation(canvas.id, storageAdapter.annotationPageId, annoPage);
+        }
+      });
     });
   }
 

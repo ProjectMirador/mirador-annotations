@@ -123,21 +123,23 @@ class AnnotationCreation extends Component {
     } = this.props;
     const { annoBody, xywh, svg } = this.state;
     canvases.forEach((canvas) => {
-      const localStorageAdapter = config.annotation.adapter(canvas.id);
+      const storageAdapter = config.annotation.adapter(canvas.id);
       const anno = new WebAnnotation({
         body: annoBody,
         canvasId: canvas.id,
-        id: (annotation && annotation.id) || `https://example.org/iiif/book1/page/manifest/${uuid()}`,
+        id: (annotation && annotation.id) || `${uuid()}`,
         svg,
         xywh,
       }).toJson();
-      let newAnnoPage;
       if (annotation) {
-        newAnnoPage = localStorageAdapter.update(anno);
+        storageAdapter.update(anno).then((annoPage) => {
+          receiveAnnotation(canvas.id, storageAdapter.annotationPageId, annoPage);
+        });
       } else {
-        newAnnoPage = localStorageAdapter.create(anno);
+        storageAdapter.create(anno).then((annoPage) => {
+          receiveAnnotation(canvas.id, storageAdapter.annotationPageId, annoPage);
+        });
       }
-      receiveAnnotation(canvas.id, localStorageAdapter.annotationPageId, newAnnoPage);
     });
     this.setState({
       activeTool: null,

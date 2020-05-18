@@ -29,8 +29,9 @@ class CanvasListItem extends Component {
     const { annotationid } = this.props;
     canvases.forEach((canvas) => {
       const adapter = storageAdapter(canvas.id);
-      const annoPage = adapter.delete(annotationid);
-      receiveAnnotation(canvas.id, adapter.annotationPageId, annoPage);
+      adapter.delete(annotationid).then((annoPage) => {
+        receiveAnnotation(canvas.id, adapter.annotationPageId, annoPage);
+      });
     });
   }
 

@@ -3,10 +3,13 @@ import mirador from 'mirador/dist/es/src/index';
 import OSDReferencesPlugin from 'mirador/dist/es/src/plugins/OSDReferences';
 import { miradorAnnotationPlugin, externalStorageAnnotationPlugin, canvasAnnotationsPlugin } from '../../src';
 import LocalStorageAdapter from '../../src/LocalStorageAdapter';
+import AnnototAdapter from '../../src/AnnototAdapter';
 
+const endpointUrl = 'http://127.0.0.1:3000/annotations';
 const config = {
   annotation: {
     adapter: (canvasId) => new LocalStorageAdapter(`localStorage://?canvasId=${canvasId}`),
+    // adapter: (canvasId) => new AnnototAdapter(canvasId, endpointUrl),
   },
   id: 'demo',
   window: {

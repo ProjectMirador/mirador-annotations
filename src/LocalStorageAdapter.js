@@ -6,21 +6,21 @@ export default class LocalStorageAdapter {
   }
 
   /** */
-  create(annotation) {
+  async create(annotation) {
     const emptyAnnoPage = {
       id: this.annotationPageId,
       items: [],
       type: 'AnnotationPage',
     };
-    const annotationPage = this.all() || emptyAnnoPage;
+    const annotationPage = await this.all() || emptyAnnoPage;
     annotationPage.items.push(annotation);
     localStorage.setItem(this.annotationPageId, JSON.stringify(annotationPage));
     return annotationPage;
   }
 
   /** */
-  update(annotation) {
-    const annotationPage = this.all();
+  async update(annotation) {
+    const annotationPage = await this.all();
     if (annotationPage) {
       const currentIndex = annotationPage.items.findIndex((item) => item.id === annotation.id);
       annotationPage.items.splice(currentIndex, 1, annotation);
@@ -31,8 +31,8 @@ export default class LocalStorageAdapter {
   }
 
   /** */
-  delete(annoId) {
-    const annotationPage = this.all();
+  async delete(annoId) {
+    const annotationPage = await this.all();
     if (annotationPage) {
       annotationPage.items = annotationPage.items.filter((item) => item.id !== annoId);
     }
@@ -41,8 +41,8 @@ export default class LocalStorageAdapter {
   }
 
   /** */
-  get(annoId) {
-    const annotationPage = this.all();
+  async get(annoId) {
+    const annotationPage = await this.all();
     if (annotationPage) {
       return annotationPage.items.find((item) => item.id === annoId);
     }
@@ -50,7 +50,7 @@ export default class LocalStorageAdapter {
   }
 
   /** */
-  all() {
+  async all() {
     return JSON.parse(localStorage.getItem(this.annotationPageId));
   }
 }
