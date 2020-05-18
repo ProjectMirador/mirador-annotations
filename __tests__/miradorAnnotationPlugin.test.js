@@ -8,9 +8,11 @@ import AnnotationCreation from '../src/AnnotationCreation';
 function createWrapper(props) {
   return shallow(
     <miradorAnnotationPlugin.component
+      config={{}}
       TargetComponent={'<div>hello</div>'}
       targetProps={{}}
       addCompanionWindow={jest.fn()}
+      receiveAnnotation={jest.fn()}
       {...props}
     />,
   );
@@ -24,14 +26,22 @@ describe('MiradorAnnotation', () => {
   });
   it('opens a new companionWindow when clicked', () => {
     const mockAddCompanionWindow = jest.fn();
+    const receiveAnnotationMock = jest.fn();
     wrapper = createWrapper({
       addCompanionWindow: mockAddCompanionWindow,
+      receiveAnnotation: receiveAnnotationMock,
     });
     wrapper.find(MiradorMenuButton).simulate('click');
     expect(mockAddCompanionWindow).toHaveBeenCalledWith(
       'custom',
       {
-        children: <AnnotationCreation />,
+        children: (
+          <AnnotationCreation
+            canvases={[]}
+            config={{}}
+            receiveAnnotation={receiveAnnotationMock}
+          />
+        ),
         position: 'right',
         title: 'New annotation',
       },
