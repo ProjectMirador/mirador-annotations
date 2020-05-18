@@ -37,13 +37,18 @@ class CanvasListItem extends Component {
   /** */
   handleEdit() {
     const {
-      addCompanionWindow, canvases, config, receiveAnnotation, windowId,
+      addCompanionWindow, canvases, config, receiveAnnotation, windowId, annotationsOnCanvases,
     } = this.context;
     const { annotationid } = this.props;
     let annotation;
     canvases.some((canvas) => {
-      const localStorageAdapter = config.annotation.adapter(canvas.id);
-      annotation = localStorageAdapter.get(annotationid);
+      if (annotationsOnCanvases[canvas.id]) {
+        Object.entries(annotationsOnCanvases[canvas.id]).forEach(([key, value], i) => {
+          if (value.json && value.json.items) {
+            annotation = value.json.items.find((anno) => anno.id === annotationid);
+          }
+        });
+      }
       return (annotation);
     });
     addCompanionWindow('custom', {
@@ -70,14 +75,18 @@ class CanvasListItem extends Component {
 
   /** */
   editable() {
-    const { canvases, storageAdapter } = this.context;
+    const { annotationsOnCanvases, canvases } = this.context;
     const { annotationid } = this.props;
-
     const annoIds = canvases.map((canvas) => {
-      const adapter = storageAdapter(canvas.id);
-      const annoPage = adapter.all();
-      if (!annoPage) return [];
-      return annoPage.items.map((item) => item.id);
+      if (annotationsOnCanvases[canvas.id]) {
+        return flatten(Object.entries(annotationsOnCanvases[canvas.id]).map(([key, value], i) => {
+          if (value.json && value.json.items) {
+            return value.json.items.map((item) => item.id);
+          }
+          return [];
+        }));
+      }
+      return [];
     });
     return flatten(annoIds).includes(annotationid);
   }

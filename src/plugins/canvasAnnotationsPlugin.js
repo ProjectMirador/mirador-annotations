@@ -11,7 +11,7 @@ class CanvasAnnotationsWrapper extends Component {
   render() {
     const {
       addCompanionWindow, canvases, config, receiveAnnotation, TargetComponent,
-      targetProps,
+      targetProps, annotationsOnCanvases,
     } = this.props;
     const props = {
       ...targetProps,
@@ -21,6 +21,7 @@ class CanvasAnnotationsWrapper extends Component {
       <AnnotationActionsContext.Provider
         value={{
           addCompanionWindow,
+          annotationsOnCanvases,
           canvases,
           config,
           receiveAnnotation,
@@ -38,6 +39,7 @@ class CanvasAnnotationsWrapper extends Component {
 
 CanvasAnnotationsWrapper.propTypes = {
   addCompanionWindow: PropTypes.func.isRequired,
+  annotationsOnCanvases: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   canvases: PropTypes.arrayOf(
     PropTypes.shape({ id: PropTypes.string, index: PropTypes.number }),
   ),
@@ -55,13 +57,23 @@ CanvasAnnotationsWrapper.propTypes = {
 };
 
 CanvasAnnotationsWrapper.defaultProps = {
+  annotationsOnCanvases: {},
   canvases: [],
 };
 
 /** */
 function mapStateToProps(state, { targetProps }) {
+  const canvases = getVisibleCanvases(state, { windowId: targetProps.windowId });
+  const annotationsOnCanvases = {};
+  canvases.forEach((canvas) => {
+    const anno = state.annotations[canvas.id];
+    if (anno) {
+      annotationsOnCanvases[canvas.id] = anno;
+    }
+  });
   return {
-    canvases: getVisibleCanvases(state, { windowId: targetProps.windowId }),
+    annotationsOnCanvases,
+    canvases,
     config: state.config,
   };
 }
