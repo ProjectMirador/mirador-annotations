@@ -12,6 +12,6 @@ module.exports = {
   ],
   // Ignore Mirador code from jest transforms
   transformIgnorePatterns: [
-    '<rootDir>/node_modules/(?!mirador)',
+    '<rootDir>/node_modules/(?!(mirador|manifesto.js))',
   ],
 };
