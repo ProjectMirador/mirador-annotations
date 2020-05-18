@@ -2,6 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import AnnotationCreation from '../src/AnnotationCreation';
+import AnnotationDrawing from '../src/AnnotationDrawing';
+import TextEditor from '../src/TextEditor';
 
 /** */
 function createWrapper(props) {
@@ -19,10 +21,18 @@ describe('AnnotationCreation', () => {
   let wrapper;
   it('renders a form', () => {
     wrapper = createWrapper();
-    expect(wrapper.find('form').length).toBe(1);
+    expect(wrapper.dive().find('form').length).toBe(1);
   });
   it('form has button toggles', () => {
     wrapper = createWrapper();
-    expect(wrapper.find(ToggleButtonGroup).length).toBe(1);
+    expect(wrapper.dive().find(ToggleButtonGroup).length).toBe(3);
+  });
+  it('adds the AnnotationDrawing component', () => {
+    wrapper = createWrapper();
+    expect(wrapper.dive().find(AnnotationDrawing).length).toBe(1);
+  });
+  it('adds the TextEditor component', () => {
+    wrapper = createWrapper();
+    expect(wrapper.dive().find(TextEditor).length).toBe(1);
   });
 });
