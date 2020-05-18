@@ -117,10 +117,10 @@ class CanvasListItem extends Component {
                 right: 0,
               }}
             >
-              <ToggleButton aria-label="Edit" onClick={this.handleEdit}>
+              <ToggleButton aria-label="Edit" onClick={this.handleEdit} value="edit">
                 <EditIcon />
               </ToggleButton>
-              <ToggleButton aria-label="Delete" onClick={this.handleDelete}>
+              <ToggleButton aria-label="Delete" onClick={this.handleDelete} value="delete">
                 <DeleteIcon />
               </ToggleButton>
             </ToggleButtonGroup>
@@ -142,7 +142,11 @@ CanvasListItem.propTypes = {
     PropTypes.func,
     PropTypes.node,
   ]).isRequired,
-  targetProps: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  targetProps: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+};
+
+CanvasListItem.defaultProps = {
+  targetProps: {},
 };
 
 CanvasListItem.contextType = AnnotationActionsContext;

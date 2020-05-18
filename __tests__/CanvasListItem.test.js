@@ -6,17 +6,15 @@ import AnnotationActionsContext from '../src/AnnotationActionsContext';
 const receiveAnnotation = jest.fn();
 const storageAdapter = jest.fn(() => (
   {
-    all: jest.fn(() => (
+    all: jest.fn().mockResolvedValue(
       {
         items: [
           { id: 'anno/2' },
         ],
-      }
-    )),
+      },
+    ),
     annotationPageId: 'pageId/3',
-    delete: jest.fn(() => (
-      'annoPageResultFromDelete'
-    )),
+    delete: jest.fn(async () => 'annoPageResultFromDelete'),
   }
 ));
 
@@ -48,12 +46,33 @@ describe('CanvasListItem', () => {
   let wrapper;
   it('wraps its children', () => {
     wrapper = createWrapper();
-    expect(wrapper.find(CanvasListItem).find('div').text()).toBe('HelloWorld');
+    expect(wrapper.find(CanvasListItem).find('li').text()).toBe('HelloWorld');
   });
-  xit('shows a delete button when it matches an editable annotationid', () => {
-    // skipping as there is likely an implementation change
+  it('shows an edit and delete button when it matches an editable annotationid and is hovering', () => {
+    wrapper = createWrapper({}, {
+      annotationsOnCanvases: {
+        'canv/1': {
+          'annoPage/1': {
+            json: {
+              items: [
+                {
+                  id: 'anno/1',
+                },
+              ],
+            },
+          },
+        },
+      },
+      canvases: [
+        {
+          id: 'canv/1',
+        },
+      ],
+    });
+    wrapper.setState({ isHovering: true });
+    expect(wrapper.find('ForwardRef(ToggleButton)').length).toBe(3);
   });
-  it('deletes from a storageAdapter when handling deletes', () => {
+  it('deletes from a storageAdapter when handling deletes', async () => {
     wrapper = createWrapper(
       {
         annotationid: 'anno/1',
@@ -66,7 +85,7 @@ describe('CanvasListItem', () => {
         ],
       },
     );
-    expect(wrapper.instance().handleDelete());
+    await wrapper.instance().handleDelete();
     expect(receiveAnnotation).toHaveBeenCalledWith('canvas/1', 'pageId/3', 'annoPageResultFromDelete');
   });
 });
