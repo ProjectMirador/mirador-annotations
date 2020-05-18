@@ -42,14 +42,13 @@ class MiradorAnnotation extends Component {
         <TargetComponent
           {...targetProps} // eslint-disable-line react/jsx-props-no-spreading
         />
-        <div>
-          <MiradorMenuButton
-            aria-label="Create new annotation"
-            onClick={this.openCreateAnnotationCompanionWindow}
-          >
-            <AddBoxIcon />
-          </MiradorMenuButton>
-        </div>
+        <MiradorMenuButton
+          aria-label="Create new annotation"
+          onClick={this.openCreateAnnotationCompanionWindow}
+          size="small"
+        >
+          <AddBoxIcon />
+        </MiradorMenuButton>
       </div>
     );
   }
