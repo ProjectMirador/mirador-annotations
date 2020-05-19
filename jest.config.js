@@ -8,10 +8,10 @@ module.exports = {
   // The directory where Jest should output its coverage files
   coverageDirectory: 'coverage',
   setupFiles: [
-    '<rootDir>/setupJest.js',
+    '<rootDir>/setupJest.js', 'jest-localstorage-mock', 'jest-canvas-mock',
   ],
   // Ignore Mirador code from jest transforms
   transformIgnorePatterns: [
-    '<rootDir>/node_modules/(?!mirador)',
+    '<rootDir>/node_modules/(?!(mirador|manifesto.js))',
   ],
 };

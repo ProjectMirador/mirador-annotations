@@ -1,0 +1,23 @@
+{
+  "id": "localStorage://?canvasId=https://iiif.harvardartmuseums.org/manifests/object/299843/canvas/canvas-47174896",
+  "items": [
+    {
+      "body": {
+        "language": "en",
+        "type": "TextualBody",
+        "value": "eye"
+      },
+      "id": "https://example.org/iiif/book1/page/manifest/efb5757d-899b-4551-a7ab-5cb5d1d0eb02",
+      "motivation": "commenting",
+      "target": {
+        "id": "https://iiif.harvardartmuseums.org/manifests/object/299843/canvas/canvas-47174896",
+        "selector": {
+          "type": "SvgSelector",
+          "value": "<path xmlns=\"http://www.w3.org/2000/svg\" d=\"M784.24634,1028.82823v-183.35553h200.33289v183.35553z\" fill=\"none\" fill-rule=\"nonzero\" stroke=\"#00bfff\" stroke-width=\"1\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-miterlimit=\"10\" stroke-dasharray=\"\" stroke-dashoffset=\"0\" font-family=\"none\" font-weight=\"none\" font-size=\"none\" text-anchor=\"none\" style=\"mix-blend-mode: normal\"/>"
+        }
+      },
+      "type": "Annotation"
+    }
+  ],
+  "type": "AnnotationPage"
+}
