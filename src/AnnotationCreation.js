@@ -217,7 +217,7 @@ class AnnotationCreation extends Component {
                   <ToggleButton value="rectangle" aria-label="add a rectangle">
                     <RectangleIcon />
                   </ToggleButton>
-                  <ToggleButton value="circle" aria-label="add a circle">
+                  <ToggleButton value="ellipse" aria-label="add a circle">
                     <CircleIcon />
                   </ToggleButton>
                   <ToggleButton value="polygon" aria-label="add a polygon">
