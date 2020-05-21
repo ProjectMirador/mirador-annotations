@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { OSDReferences } from 'mirador/dist/es/src/plugins/OSDReferences';
 import { renderWithPaperScope, PaperContainer } from '@psychobolt/react-paperjs';
-import { CircleTool, PolygonTool, RectangleTool } from '@psychobolt/react-paperjs-editor';
+import { EllipseTool, PolygonTool, RectangleTool } from '@psychobolt/react-paperjs-editor';
 import { Point } from 'paper';
 import flatten from 'lodash/flatten';
 
@@ -80,8 +80,8 @@ class AnnotationDrawing extends Component {
       case 'rectangle':
         ActiveTool = RectangleTool;
         break;
-      case 'circle':
-        ActiveTool = CircleTool;
+      case 'ellipse':
+        ActiveTool = EllipseTool;
         break;
       case 'polygon':
         ActiveTool = PolygonTool;
@@ -113,6 +113,7 @@ class AnnotationDrawing extends Component {
                   strokeColor,
                   strokeWidth: strokeWidth / paper.view.zoom,
                 }}
+                paper={paper}
               />
             );
           })}
