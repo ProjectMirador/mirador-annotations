@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Tool } from '@psychobolt/react-paperjs';
+import { Rectangle } from 'paper';
 import flatten from 'lodash/flatten';
 import { mapChildren } from './utils';
 /** */
@@ -26,6 +27,14 @@ class EditTool extends Component {
     paths.forEach((path) => {
       if (path.contains(e.point)) {
         path.data.state = 'moving'; // eslint-disable-line no-param-reassign
+        return;
+      }
+      if (path.hitTest(e.point, { segments: true, tolerance: 8 })) {
+        path.data.state = 'resizing'; // eslint-disable-line no-param-reassign
+        path.data.bounds = path.bounds.clone(); // eslint-disable-line no-param-reassign
+        path.data.scaleBase = e.point.subtract( // eslint-disable-line no-param-reassign
+          path.bounds.center,
+        );
       }
     });
   }
@@ -46,6 +55,13 @@ class EditTool extends Component {
         path.position = path.position.add( // eslint-disable-line no-param-reassign
           e.point.subtract(e.lastPoint),
         );
+      } else if (path.data.state === 'resizing') {
+        const { bounds } = path.data;
+        const scale = e.point.subtract(bounds.center).length / path.data.scaleBase.length;
+        const tlVec = bounds.topLeft.subtract(bounds.center).multiply(scale);
+        const brVec = bounds.bottomRight.subtract(bounds.center).multiply(scale);
+        const newBounds = new Rectangle(tlVec.add(bounds.center), brVec.add(bounds.center));
+        path.bounds = newBounds; // eslint-disable-line no-param-reassign
       }
     });
   }
