@@ -71,7 +71,7 @@ class EditTool extends Component {
 
   /** */
   onMouseUp(e) {
-    const { paper } = this.props;
+    const { onPathAdd, paper } = this.props;
     const { project } = paper;
 
     const paths = flatten(project.layers.map((layer) => (
@@ -79,6 +79,7 @@ class EditTool extends Component {
     )));
     paths.forEach((path) => {
       path.data.state = null; // eslint-disable-line no-param-reassign
+      onPathAdd(path);
     });
   }
 
@@ -96,6 +97,7 @@ class EditTool extends Component {
 }
 
 EditTool.propTypes = {
+  onPathAdd: PropTypes.func.isRequired,
   paper: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
 
