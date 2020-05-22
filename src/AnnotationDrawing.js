@@ -100,7 +100,10 @@ class AnnotationDrawing extends Component {
           viewProps={viewProps}
         >
           {renderWithPaperScope((paper) => {
-            if (svg) {
+            const paths = flatten(paper.project.layers.map((layer) => (
+              flatten(mapChildren(layer)).map((aPath) => aPath)
+            )));
+            if (svg && paths.length === 0) {
               paper.project.importSVG(svg);
             }
             return (
