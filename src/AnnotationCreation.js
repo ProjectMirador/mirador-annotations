@@ -13,6 +13,7 @@ import FormatColorFillIcon from '@material-ui/icons/FormatColorFill';
 import StrokeColorIcon from '@material-ui/icons/BorderColor';
 import LineWeightIcon from '@material-ui/icons/LineWeight';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import FormatShapesIcon from '@material-ui/icons/FormatShapes';
 import Popover from '@material-ui/core/Popover';
 import Divider from '@material-ui/core/Divider';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -203,6 +204,9 @@ class AnnotationCreation extends Component {
                 >
                   <ToggleButton value="cursor" aria-label="select cursor">
                     <CursorIcon />
+                  </ToggleButton>
+                  <ToggleButton value="edit" aria-label="select cursor">
+                    <FormatShapesIcon />
                   </ToggleButton>
                 </ToggleButtonGroup>
                 <Divider flexItem orientation="vertical" className={classes.divider} />

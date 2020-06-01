@@ -6,6 +6,8 @@ import { renderWithPaperScope, PaperContainer } from '@psychobolt/react-paperjs'
 import { EllipseTool, PolygonTool, RectangleTool } from '@psychobolt/react-paperjs-editor';
 import { Point } from 'paper';
 import flatten from 'lodash/flatten';
+import EditTool from './EditTool';
+import { mapChildren } from './utils';
 
 /** */
 class AnnotationDrawing extends Component {
@@ -31,16 +33,9 @@ class AnnotationDrawing extends Component {
       x, y, width, height,
     } = bounds;
 
-    /** */
-    function mapChildren(layerThing) {
-      if (layerThing.children) {
-        return flatten(layerThing.children.map((child) => mapChildren(child)));
-      }
-      return layerThing;
-    }
-
     // Reset strokeWidth for persistence
     path.strokeWidth = strokeWidth; // eslint-disable-line no-param-reassign
+    path.data.state = null; // eslint-disable-line no-param-reassign
     const svgExports = flatten(path.project.layers.map((layer) => (
       flatten(mapChildren(layer)).map((aPath) => aPath.exportSVG({ asString: true }))
     )));
@@ -86,6 +81,9 @@ class AnnotationDrawing extends Component {
       case 'polygon':
         ActiveTool = PolygonTool;
         break;
+      case 'edit':
+        ActiveTool = EditTool;
+        break;
       default:
         break;
     }
@@ -102,7 +100,10 @@ class AnnotationDrawing extends Component {
           viewProps={viewProps}
         >
           {renderWithPaperScope((paper) => {
-            if (svg) {
+            const paths = flatten(paper.project.layers.map((layer) => (
+              flatten(mapChildren(layer)).map((aPath) => aPath)
+            )));
+            if (svg && paths.length === 0) {
               paper.project.importSVG(svg);
             }
             return (
