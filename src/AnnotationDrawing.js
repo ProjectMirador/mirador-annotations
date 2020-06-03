@@ -106,6 +106,8 @@ class AnnotationDrawing extends Component {
             if (svg && paths.length === 0) {
               paper.project.importSVG(svg);
             }
+            paper.settings.handleSize = 10; // eslint-disable-line no-param-reassign
+            paper.settings.hitTolerance = 10; // eslint-disable-line no-param-reassign
             return (
               <ActiveTool
                 onPathAdd={this.addPath}
