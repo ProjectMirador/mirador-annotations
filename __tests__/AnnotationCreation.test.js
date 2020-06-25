@@ -9,6 +9,7 @@ import TextEditor from '../src/TextEditor';
 function createWrapper(props) {
   return shallow(
     <AnnotationCreation
+      id="x"
       config={{}}
       receiveAnnotation={jest.fn()}
       windowId="abc"

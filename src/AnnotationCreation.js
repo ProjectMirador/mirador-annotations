@@ -22,6 +22,7 @@ import MenuList from '@material-ui/core/MenuList';
 import { SketchPicker } from 'react-color';
 import { v4 as uuid } from 'uuid';
 import { withStyles } from '@material-ui/core/styles';
+import CompanionWindow from 'mirador/dist/es/src/containers/CompanionWindow';
 import AnnotationDrawing from './AnnotationDrawing';
 import TextEditor from './TextEditor';
 import WebAnnotation from './WebAnnotation';
@@ -120,7 +121,7 @@ class AnnotationCreation extends Component {
   submitForm(e) {
     e.preventDefault();
     const {
-      annotation, canvases, parentactions, receiveAnnotation, config,
+      annotation, canvases, closeCompanionWindow, receiveAnnotation, config,
     } = this.props;
     const { annoBody, xywh, svg } = this.state;
     canvases.forEach((canvas) => {
@@ -145,7 +146,7 @@ class AnnotationCreation extends Component {
     this.setState({
       activeTool: null,
     });
-    parentactions.closeCompanionWindow();
+    closeCompanionWindow();
   }
 
   /** */
@@ -169,13 +170,20 @@ class AnnotationCreation extends Component {
 
   /** */
   render() {
-    const { classes, parentactions, windowId } = this.props;
+    const {
+      annotation, classes, closeCompanionWindow, id, windowId,
+    } = this.props;
+
     const {
       activeTool, colorPopoverOpen, currentColorType, fillColor, popoverAnchorEl, strokeColor,
       popoverLineWeightAnchorEl, lineWeightPopoverOpen, strokeWidth, annoBody, svg,
     } = this.state;
     return (
-      <Paper className={classes.root}>
+      <CompanionWindow
+        title={annotation ? 'Edit annotation' : 'New annotation'}
+        windowId={windowId}
+        id={id}
+      >
         <AnnotationDrawing
           activeTool={activeTool}
           fillColor={fillColor}
@@ -282,7 +290,7 @@ class AnnotationCreation extends Component {
               />
             </Grid>
           </Grid>
-          <Button onClick={parentactions.closeCompanionWindow}>
+          <Button onClick={closeCompanionWindow}>
             Cancel
           </Button>
           <Button variant="contained" color="primary" type="submit">
@@ -320,7 +328,7 @@ class AnnotationCreation extends Component {
             onChangeComplete={this.updateStrokeColor}
           />
         </Popover>
-      </Paper>
+      </CompanionWindow>
     );
   }
 }
@@ -344,9 +352,6 @@ const styles = (theme) => ({
     display: 'flex',
     flexWrap: 'wrap',
   },
-  root: {
-    padding: theme.spacing(1),
-  },
 });
 
 AnnotationCreation.propTypes = {
@@ -355,14 +360,13 @@ AnnotationCreation.propTypes = {
     PropTypes.shape({ id: PropTypes.string, index: PropTypes.number }),
   ),
   classes: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  closeCompanionWindow: PropTypes.func,
   config: PropTypes.shape({
     annotation: PropTypes.shape({
       adapter: PropTypes.func,
     }),
   }).isRequired,
-  parentactions: PropTypes.shape({
-    closeCompanionWindow: PropTypes.func,
-  }),
+  id: PropTypes.string.isRequired,
   receiveAnnotation: PropTypes.func.isRequired,
   windowId: PropTypes.string.isRequired,
 };
@@ -370,7 +374,7 @@ AnnotationCreation.propTypes = {
 AnnotationCreation.defaultProps = {
   annotation: null,
   canvases: [],
-  parentactions: {},
+  closeCompanionWindow: () => {},
 };
 
 

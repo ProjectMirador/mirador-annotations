@@ -62,8 +62,8 @@ CanvasAnnotationsWrapper.defaultProps = {
 };
 
 /** */
-function mapStateToProps(state, { targetProps }) {
-  const canvases = getVisibleCanvases(state, { windowId: targetProps.windowId });
+function mapStateToProps(state, { targetProps: { windowId } }) {
+  const canvases = getVisibleCanvases(state, { windowId });
   const annotationsOnCanvases = {};
   canvases.forEach((canvas) => {
     const anno = state.annotations[canvas.id];
