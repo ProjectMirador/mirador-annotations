@@ -21,7 +21,7 @@ class AnnotationDrawing extends Component {
   /** */
   componentDidMount() {
     const { windowId } = this.props;
-    this.OSDReference = OSDReferences.get(windowId).current;
+    this.OSDReference = OSDReferences.get(windowId);
   }
 
   /** */
@@ -60,13 +60,17 @@ class AnnotationDrawing extends Component {
     } = this.props;
     if (!activeTool || activeTool === 'cursor') return null;
     // Setup Paper View to have the same center and zoom as the OSD Viewport
-    const viewportZoom = this.OSDReference.viewer.viewport.getZoom(true);
-    const image1 = this.OSDReference.viewer.world.getItemAt(0);
-    const center = this.OSDReference.viewer.viewport.viewportToImageCoordinates(
-      this.OSDReference.viewer.viewport.getCenter(true),
+    const viewportZoom = this.OSDReference.viewport.getZoom(true);
+    const image1 = this.OSDReference.world.getItemAt(0);
+    const center = this.OSDReference.viewport.viewportToImageCoordinates(
+      this.OSDReference.viewport.getCenter(true),
     );
+    const flipped = this.OSDReference.viewport.getFlip();
+
     const viewProps = {
       center: new Point(center.x, center.y),
+      rotation: this.OSDReference.viewport.getRotation(),
+      scaling: new Point(flipped ? -1 : 1, 1),
       zoom: image1.viewportToImageZoom(viewportZoom),
     };
 
@@ -130,7 +134,7 @@ class AnnotationDrawing extends Component {
     const { windowId } = this.props;
     this.OSDReference = OSDReferences.get(windowId).current;
     return (
-      ReactDOM.createPortal(this.paperThing(), this.OSDReference.viewer.element)
+      ReactDOM.createPortal(this.paperThing(), this.OSDReference.element)
     );
   }
 }

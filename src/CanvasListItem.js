@@ -6,7 +6,6 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import flatten from 'lodash/flatten';
 import AnnotationActionsContext from './AnnotationActionsContext';
-import AnnotationCreation from './AnnotationCreation';
 
 /** */
 class CanvasListItem extends Component {
@@ -38,7 +37,7 @@ class CanvasListItem extends Component {
   /** */
   handleEdit() {
     const {
-      addCompanionWindow, canvases, config, receiveAnnotation, windowId, annotationsOnCanvases,
+      addCompanionWindow, canvases, annotationsOnCanvases,
     } = this.context;
     const { annotationid } = this.props;
     let annotation;
@@ -52,18 +51,9 @@ class CanvasListItem extends Component {
       }
       return (annotation);
     });
-    addCompanionWindow('custom', {
-      children: (
-        <AnnotationCreation
-          annotation={annotation}
-          canvases={canvases}
-          receiveAnnotation={receiveAnnotation}
-          config={config}
-          windowId={windowId}
-        />
-      ),
+    addCompanionWindow('annotationCreation', {
+      annotationid,
       position: 'right',
-      title: 'Edit annotation',
     });
   }
 
@@ -142,11 +132,6 @@ CanvasListItem.propTypes = {
     PropTypes.func,
     PropTypes.node,
   ]).isRequired,
-  targetProps: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-};
-
-CanvasListItem.defaultProps = {
-  targetProps: {},
 };
 
 CanvasListItem.contextType = AnnotationActionsContext;

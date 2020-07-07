@@ -2,7 +2,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { MiradorMenuButton } from 'mirador/dist/es/src/components/MiradorMenuButton';
 import miradorAnnotationPlugin from '../src/plugins/miradorAnnotationPlugin';
-import AnnotationCreation from '../src/AnnotationCreation';
 
 /** */
 function createWrapper(props) {
@@ -33,17 +32,9 @@ describe('MiradorAnnotation', () => {
     });
     wrapper.find(MiradorMenuButton).simulate('click');
     expect(mockAddCompanionWindow).toHaveBeenCalledWith(
-      'custom',
+      'annotationCreation',
       {
-        children: (
-          <AnnotationCreation
-            canvases={[]}
-            config={{}}
-            receiveAnnotation={receiveAnnotationMock}
-          />
-        ),
         position: 'right',
-        title: 'New annotation',
       },
     );
   });

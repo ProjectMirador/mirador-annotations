@@ -1,7 +1,6 @@
 
 import mirador from 'mirador/dist/es/src/index';
-import OSDReferencesPlugin from 'mirador/dist/es/src/plugins/OSDReferences';
-import { miradorAnnotationPlugin, externalStorageAnnotationPlugin, canvasAnnotationsPlugin } from '../../src';
+import annotationPlugins from '../../src';
 import LocalStorageAdapter from '../../src/LocalStorageAdapter';
 import AnnototAdapter from '../../src/AnnototAdapter';
 
@@ -21,9 +20,4 @@ const config = {
   }],
 };
 
-mirador.viewer(config, [
-  OSDReferencesPlugin,
-  miradorAnnotationPlugin,
-  canvasAnnotationsPlugin,
-  externalStorageAnnotationPlugin,
-]);
+mirador.viewer(config, [...annotationPlugins]);
