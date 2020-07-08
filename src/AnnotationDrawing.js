@@ -52,7 +52,6 @@ class AnnotationDrawing extends Component {
     });
   }
 
-
   /** */
   paperThing() {
     const {
@@ -156,6 +155,5 @@ AnnotationDrawing.defaultProps = {
   strokeWidth: 1,
   svg: null,
 };
-
 
 export default AnnotationDrawing;

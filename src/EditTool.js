@@ -75,7 +75,6 @@ class EditTool extends Component {
       flatten(mapChildren(layer)).map((aPath) => aPath)
     )));
 
-
     project.activeLayer.selected = false;
 
     let anySelected = false;

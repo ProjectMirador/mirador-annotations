@@ -88,7 +88,6 @@ const mapDispatchToProps = (dispatch, props) => ({
   ),
 });
 
-
 export default {
   component: CanvasAnnotationsWrapper,
   mapDispatchToProps,
