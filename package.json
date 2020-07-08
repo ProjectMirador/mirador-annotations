@@ -1,6 +1,6 @@
 {
   "name": "mirador-annotations",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "mirador-annotations React component",
   "main": "lib/index.js",
   "module": "es/index.js",
