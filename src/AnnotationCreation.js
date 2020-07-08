@@ -377,5 +377,4 @@ AnnotationCreation.defaultProps = {
   closeCompanionWindow: () => {},
 };
 
-
 export default withStyles(styles)(AnnotationCreation);
