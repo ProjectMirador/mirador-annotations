@@ -61,7 +61,7 @@ class AnnotationDrawing extends Component {
     // Setup Paper View to have the same center and zoom as the OSD Viewport
     const viewportZoom = this.OSDReference.viewport.getZoom(true);
     const image1 = this.OSDReference.world.getItemAt(0);
-    const center = this.OSDReference.viewport.viewportToImageCoordinates(
+    const center = image1.viewportToImageCoordinates(
       this.OSDReference.viewport.getCenter(true),
     );
     const flipped = this.OSDReference.viewport.getFlip();
