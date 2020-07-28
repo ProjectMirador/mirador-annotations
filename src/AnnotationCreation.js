@@ -9,6 +9,9 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import RectangleIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CircleIcon from '@material-ui/icons/RadioButtonUnchecked';
 import PolygonIcon from '@material-ui/icons/Timeline';
+import GestureIcon from '@material-ui/icons/Gesture';
+import ClosedPolygonIcon from '@material-ui/icons/ChangeHistory';
+import OpenPolygonIcon from '@material-ui/icons/ShowChart';
 import FormatColorFillIcon from '@material-ui/icons/FormatColorFill';
 import StrokeColorIcon from '@material-ui/icons/BorderColor';
 import LineWeightIcon from '@material-ui/icons/LineWeight';
@@ -41,6 +44,7 @@ class AnnotationCreation extends Component {
     this.state = {
       activeTool: 'cursor',
       annoBody: '',
+      closedMode: 'closed',
       colorPopoverOpen: false,
       currentColorType: false,
       fillColor: null,
@@ -58,6 +62,7 @@ class AnnotationCreation extends Component {
     this.updateBody = this.updateBody.bind(this);
     this.updateGeometry = this.updateGeometry.bind(this);
     this.changeTool = this.changeTool.bind(this);
+    this.changeClosedMode = this.changeClosedMode.bind(this);
     this.openChooseColor = this.openChooseColor.bind(this);
     this.openChooseLineWeight = this.openChooseLineWeight.bind(this);
     this.handleLineWeightSelect = this.handleLineWeightSelect.bind(this);
@@ -157,6 +162,13 @@ class AnnotationCreation extends Component {
   }
 
   /** */
+  changeClosedMode(e) {
+    this.setState({
+      closedMode: e.currentTarget.value,
+    });
+  }
+
+  /** */
   updateBody(annoBody) {
     this.setState({ annoBody });
   }
@@ -176,7 +188,7 @@ class AnnotationCreation extends Component {
 
     const {
       activeTool, colorPopoverOpen, currentColorType, fillColor, popoverAnchorEl, strokeColor,
-      popoverLineWeightAnchorEl, lineWeightPopoverOpen, strokeWidth, annoBody, svg,
+      popoverLineWeightAnchorEl, lineWeightPopoverOpen, strokeWidth, closedMode, annoBody, svg,
     } = this.state;
     return (
       <CompanionWindow
@@ -189,6 +201,7 @@ class AnnotationCreation extends Component {
           fillColor={fillColor}
           strokeColor={strokeColor}
           strokeWidth={strokeWidth}
+          closed={closedMode === 'closed'}
           svg={svg}
           updateGeometry={this.updateGeometry}
           windowId={windowId}
@@ -235,6 +248,9 @@ class AnnotationCreation extends Component {
                   <ToggleButton value="polygon" aria-label="add a polygon">
                     <PolygonIcon />
                   </ToggleButton>
+                  <ToggleButton value="freehand" aria-label="free hand polygon">
+                    <GestureIcon />
+                  </ToggleButton>
                 </ToggleButtonGroup>
               </Paper>
             </Grid>
@@ -275,6 +291,27 @@ class AnnotationCreation extends Component {
                   <ArrowDropDownIcon />
                 </ToggleButton>
               </ToggleButtonGroup>
+
+              <Divider flexItem orientation="vertical" className={classes.divider} />
+              { /* close / open polygon mode only for freehand drawing mode. */
+                activeTool === 'freehand'
+                  ? (
+                    <ToggleButtonGroup
+                      size="small"
+                      value={closedMode}
+                      onChange={this.changeClosedMode}
+                    >
+                      <ToggleButton value="closed">
+                        <ClosedPolygonIcon />
+                      </ToggleButton>
+                      <ToggleButton value="open">
+                        <OpenPolygonIcon />
+                      </ToggleButton>
+                    </ToggleButtonGroup>
+                  )
+                  : null
+              }
+
             </Grid>
           </Grid>
           <Grid container>
