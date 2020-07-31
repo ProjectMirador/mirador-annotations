@@ -9,9 +9,6 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import RectangleIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CircleIcon from '@material-ui/icons/RadioButtonUnchecked';
 import PolygonIcon from '@material-ui/icons/Timeline';
-import GestureIcon from '@material-ui/icons/Gesture';
-import ClosedPolygonIcon from '@material-ui/icons/ChangeHistory';
-import OpenPolygonIcon from '@material-ui/icons/ShowChart';
 import FormatColorFillIcon from '@material-ui/icons/FormatColorFill';
 import StrokeColorIcon from '@material-ui/icons/BorderColor';
 import LineWeightIcon from '@material-ui/icons/LineWeight';
@@ -38,13 +35,33 @@ class AnnotationCreation extends Component {
     super(props);
     const annoState = {};
     if (props.annotation) {
-      annoState.annoBody = props.annotation.body.value;
-      annoState.svg = props.annotation.target.selector.value;
+      if (Array.isArray(props.annotation.body)) {
+        annoState.tags = [];
+        props.annotation.body.forEach((body) => {
+          if (body.purpose === 'tagging') {
+            annoState.tags.push(body.value);
+          } else {
+            annoState.annoBody = body.value;
+          }
+        });
+      } else {
+        annoState.annoBody = props.annotation.body.value;
+      }
+      if (Array.isArray(props.annotation.target.selector)) {
+        props.annotation.target.selector.forEach((selector) => {
+          if (selector.type === 'SvgSelector') {
+            annoState.svg = selector.value;
+          } else if (selector.type === 'FragmentSelector') {
+            annoState.xywh = selector.value.replace('xywh=', '');
+          }
+        });
+      } else {
+        annoState.svg = props.annotation.target.selector.value;
+      }
     }
     this.state = {
       activeTool: 'cursor',
       annoBody: '',
-      closedMode: 'closed',
       colorPopoverOpen: false,
       currentColorType: false,
       fillColor: null,
@@ -62,7 +79,6 @@ class AnnotationCreation extends Component {
     this.updateBody = this.updateBody.bind(this);
     this.updateGeometry = this.updateGeometry.bind(this);
     this.changeTool = this.changeTool.bind(this);
-    this.changeClosedMode = this.changeClosedMode.bind(this);
     this.openChooseColor = this.openChooseColor.bind(this);
     this.openChooseLineWeight = this.openChooseLineWeight.bind(this);
     this.handleLineWeightSelect = this.handleLineWeightSelect.bind(this);
@@ -128,7 +144,9 @@ class AnnotationCreation extends Component {
     const {
       annotation, canvases, closeCompanionWindow, receiveAnnotation, config,
     } = this.props;
-    const { annoBody, xywh, svg } = this.state;
+    const {
+      annoBody, tags, xywh, svg,
+    } = this.state;
     canvases.forEach((canvas) => {
       const storageAdapter = config.annotation.adapter(canvas.id);
       const anno = new WebAnnotation({
@@ -136,6 +154,7 @@ class AnnotationCreation extends Component {
         canvasId: canvas.id,
         id: (annotation && annotation.id) || `${uuid()}`,
         svg,
+        tags,
         xywh,
       }).toJson();
       if (annotation) {
@@ -162,13 +181,6 @@ class AnnotationCreation extends Component {
   }
 
   /** */
-  changeClosedMode(e) {
-    this.setState({
-      closedMode: e.currentTarget.value,
-    });
-  }
-
-  /** */
   updateBody(annoBody) {
     this.setState({ annoBody });
   }
@@ -188,7 +200,7 @@ class AnnotationCreation extends Component {
 
     const {
       activeTool, colorPopoverOpen, currentColorType, fillColor, popoverAnchorEl, strokeColor,
-      popoverLineWeightAnchorEl, lineWeightPopoverOpen, strokeWidth, closedMode, annoBody, svg,
+      popoverLineWeightAnchorEl, lineWeightPopoverOpen, strokeWidth, annoBody, svg,
     } = this.state;
     return (
       <CompanionWindow
@@ -201,7 +213,6 @@ class AnnotationCreation extends Component {
           fillColor={fillColor}
           strokeColor={strokeColor}
           strokeWidth={strokeWidth}
-          closed={closedMode === 'closed'}
           svg={svg}
           updateGeometry={this.updateGeometry}
           windowId={windowId}
@@ -248,9 +259,6 @@ class AnnotationCreation extends Component {
                   <ToggleButton value="polygon" aria-label="add a polygon">
                     <PolygonIcon />
                   </ToggleButton>
-                  <ToggleButton value="freehand" aria-label="free hand polygon">
-                    <GestureIcon />
-                  </ToggleButton>
                 </ToggleButtonGroup>
               </Paper>
             </Grid>
@@ -291,27 +299,6 @@ class AnnotationCreation extends Component {
                   <ArrowDropDownIcon />
                 </ToggleButton>
               </ToggleButtonGroup>
-
-              <Divider flexItem orientation="vertical" className={classes.divider} />
-              { /* close / open polygon mode only for freehand drawing mode. */
-                activeTool === 'freehand'
-                  ? (
-                    <ToggleButtonGroup
-                      size="small"
-                      value={closedMode}
-                      onChange={this.changeClosedMode}
-                    >
-                      <ToggleButton value="closed">
-                        <ClosedPolygonIcon />
-                      </ToggleButton>
-                      <ToggleButton value="open">
-                        <OpenPolygonIcon />
-                      </ToggleButton>
-                    </ToggleButtonGroup>
-                  )
-                  : null
-              }
-
             </Grid>
           </Grid>
           <Grid container>

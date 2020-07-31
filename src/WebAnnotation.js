@@ -2,23 +2,20 @@
 export default class WebAnnotation {
   /** */
   constructor({
-    canvasId, id, xywh, body, svg,
+    canvasId, id, xywh, body, tags, svg,
   }) {
     this.id = id;
     this.canvasId = canvasId;
     this.xywh = xywh;
     this.body = body;
+    this.tags = tags;
     this.svg = svg;
   }
 
   /** */
   toJson() {
     return {
-      body: {
-        language: 'en',
-        type: 'TextualBody',
-        value: this.body,
-      },
+      body: this.createBody(),
       id: this.id,
       motivation: 'commenting',
       target: this.target(),
@@ -27,19 +24,52 @@ export default class WebAnnotation {
   }
 
   /** */
+  createBody() {
+    let bodies = [];
+    if (this.body) {
+      bodies.push({
+        type: 'TextualBody',
+        value: this.body,
+      });
+    }
+    if (this.tags) {
+      bodies = bodies.concat(this.tags.map((tag) => ({
+        purpose: 'tagging',
+        type: 'TextualBody',
+        value: tag,
+      })));
+    }
+    if (bodies.length === 1) {
+      return bodies[0];
+    }
+    return bodies;
+  }
+
+  /** */
   target() {
     let target = this.canvasId;
     if (this.svg) {
-      target = {};
-      target.id = this.canvasId;
-      target.selector = {
-        type: 'SvgSelector',
-        value: this.svg,
+      target = {
+        id: this.canvasId, // should be source, see #25
+        selector: {
+          type: 'SvgSelector',
+          value: this.svg,
+        },
       };
-      return target;
     }
     if (this.xywh) {
-      target += `#xywh=${this.xywh}`;
+      if (target.selector) {
+        // add fragment selector
+        target.selector = [
+          {
+            type: 'FragmentSelector',
+            value: `xywh=${this.xywh}`,
+          },
+          target.selector,
+        ];
+      } else {
+        target = `${this.canvasId}#xywh=${this.xywh}`;
+      }
     }
     return target;
   }
