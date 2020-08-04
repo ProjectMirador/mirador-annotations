@@ -158,6 +158,7 @@ class AnnotationCreation extends Component {
         body: annoBody,
         canvasId: canvas.id,
         id: (annotation && annotation.id) || `${uuid()}`,
+        manifestId: canvas.options.resource.id,
         svg,
         tags,
         xywh,

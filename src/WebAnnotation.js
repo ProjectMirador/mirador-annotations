@@ -2,7 +2,7 @@
 export default class WebAnnotation {
   /** */
   constructor({
-    canvasId, id, xywh, body, tags, svg,
+    canvasId, id, xywh, body, tags, svg, manifestId,
   }) {
     this.id = id;
     this.canvasId = canvasId;
@@ -10,6 +10,7 @@ export default class WebAnnotation {
     this.body = body;
     this.tags = tags;
     this.svg = svg;
+    this.manifestId = manifestId;
   }
 
   /** */
@@ -48,27 +49,43 @@ export default class WebAnnotation {
   /** */
   target() {
     let target = this.canvasId;
+    if (this.svg || this.xywh) {
+      if (this.manifestId) {
+        target = {
+          source: {
+            id: this.canvasId,
+            partOf: {
+              id: this.manifestId,
+              type: 'Manifest',
+            },
+            type: 'Canvas',
+          },
+        };
+      } else {
+        target = {
+          source: this.canvasId,
+        };
+      }
+    }
     if (this.svg) {
-      target = {
-        id: this.canvasId, // should be source, see #25
-        selector: {
-          type: 'SvgSelector',
-          value: this.svg,
-        },
+      target.selector = {
+        type: 'SvgSelector',
+        value: this.svg,
       };
     }
     if (this.xywh) {
+      const fragsel = {
+        type: 'FragmentSelector',
+        value: `xywh=${this.xywh}`,
+      };
       if (target.selector) {
         // add fragment selector
         target.selector = [
-          {
-            type: 'FragmentSelector',
-            value: `xywh=${this.xywh}`,
-          },
+          fragsel,
           target.selector,
         ];
       } else {
-        target = `${this.canvasId}#xywh=${this.xywh}`;
+        target.selector = fragsel;
       }
     }
     return target;

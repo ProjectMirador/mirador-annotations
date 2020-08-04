@@ -25,7 +25,6 @@ describe('WebAnnotation', () => {
   describe('target', () => {
     it('with svg and xywh', () => {
       expect(subject.target()).toEqual({
-        id: 'canvasId',
         selector: [
           {
             type: 'FragmentSelector',
@@ -36,21 +35,29 @@ describe('WebAnnotation', () => {
             value: 'svg',
           },
         ],
+        source: 'canvasId',
       });
     });
     it('with svg only', () => {
       subject = createSubject({ xywh: null });
       expect(subject.target()).toEqual({
-        id: 'canvasId',
         selector: {
           type: 'SvgSelector',
           value: 'svg',
         },
+        source: 'canvasId',
       });
     });
     it('with xywh only', () => {
       subject = createSubject({ svg: null });
-      expect(subject.target()).toBe('canvasId#xywh=xywh');
+      /* expect(subject.target()).toBe('canvasId#xywh=xywh'); */
+      expect(subject.target()).toEqual({
+        selector: {
+          type: 'FragmentSelector',
+          value: 'xywh=xywh',
+        },
+        source: 'canvasId',
+      });
     });
     it('with no xywh or svg', () => {
       subject = createSubject({ svg: null, xywh: null });

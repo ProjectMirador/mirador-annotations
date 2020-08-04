@@ -77,7 +77,7 @@ export default class SimpleAnnotationServerV2Adapter {
       motivation: 'oa:commenting',
       on: {
         '@type': 'oa:SpecificResource',
-        full: v3anno.target.id,
+        full: v3anno.target.source.id,
       },
     };
     // copy id if it is SAS-generated
@@ -100,6 +100,12 @@ export default class SimpleAnnotationServerV2Adapter {
         };
       } else {
         v2anno.on.selector = this.createV2AnnoSelector(v3anno.target.selector);
+      }
+      if (v3anno.target.source.partOf) {
+        v2anno.on.within = {
+          '@id': v3anno.target.source.partOf.id,
+          '@type': 'sc:Manifest',
+        };
       }
     }
     return v2anno;
@@ -172,8 +178,10 @@ export default class SimpleAnnotationServerV2Adapter {
       [v2target] = v2target;
     }
     v3anno.target = {
-      id: v2target.full, // should be source, see #25
       selector: this.createV3AnnoSelector(v2target.selector),
+      source: {
+        id: v2target.full,
+      },
     };
     return v3anno;
   }
