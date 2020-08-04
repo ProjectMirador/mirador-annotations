@@ -7,6 +7,7 @@ function createSubject(args = {}) {
     canvasId: 'canvasId',
     id: 'id',
     svg: 'svg',
+    tags: ['tags'],
     xywh: 'xywh',
     ...args,
   });
@@ -22,7 +23,23 @@ describe('WebAnnotation', () => {
     });
   });
   describe('target', () => {
-    it('with svg', () => {
+    it('with svg and xywh', () => {
+      expect(subject.target()).toEqual({
+        id: 'canvasId',
+        selector: [
+          {
+            type: 'FragmentSelector',
+            value: 'xywh=xywh',
+          },
+          {
+            type: 'SvgSelector',
+            value: 'svg',
+          },
+        ],
+      });
+    });
+    it('with svg only', () => {
+      subject = createSubject({ xywh: null });
       expect(subject.target()).toEqual({
         id: 'canvasId',
         selector: {
@@ -38,6 +55,36 @@ describe('WebAnnotation', () => {
     it('with no xywh or svg', () => {
       subject = createSubject({ svg: null, xywh: null });
       expect(subject.target()).toBe('canvasId');
+    });
+  });
+  describe('body', () => {
+    it('with text and tags', () => {
+      expect(subject.createBody()).toEqual([
+        {
+          type: 'TextualBody',
+          value: 'body',
+        },
+        {
+          purpose: 'tagging',
+          type: 'TextualBody',
+          value: 'tags',
+        },
+      ]);
+    });
+    it('with text only', () => {
+      subject = createSubject({ tags: null });
+      expect(subject.createBody()).toEqual({
+        type: 'TextualBody',
+        value: 'body',
+      });
+    });
+    it('with tags only', () => {
+      subject = createSubject({ body: null });
+      expect(subject.createBody()).toEqual({
+        purpose: 'tagging',
+        type: 'TextualBody',
+        value: 'tags',
+      });
     });
   });
   describe('toJson', () => {

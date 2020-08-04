@@ -38,8 +38,29 @@ class AnnotationCreation extends Component {
     super(props);
     const annoState = {};
     if (props.annotation) {
-      annoState.annoBody = props.annotation.body.value;
-      annoState.svg = props.annotation.target.selector.value;
+      if (Array.isArray(props.annotation.body)) {
+        annoState.tags = [];
+        props.annotation.body.forEach((body) => {
+          if (body.purpose === 'tagging') {
+            annoState.tags.push(body.value);
+          } else {
+            annoState.annoBody = body.value;
+          }
+        });
+      } else {
+        annoState.annoBody = props.annotation.body.value;
+      }
+      if (Array.isArray(props.annotation.target.selector)) {
+        props.annotation.target.selector.forEach((selector) => {
+          if (selector.type === 'SvgSelector') {
+            annoState.svg = selector.value;
+          } else if (selector.type === 'FragmentSelector') {
+            annoState.xywh = selector.value.replace('xywh=', '');
+          }
+        });
+      } else {
+        annoState.svg = props.annotation.target.selector.value;
+      }
     }
     this.state = {
       activeTool: 'cursor',
@@ -128,7 +149,9 @@ class AnnotationCreation extends Component {
     const {
       annotation, canvases, closeCompanionWindow, receiveAnnotation, config,
     } = this.props;
-    const { annoBody, xywh, svg } = this.state;
+    const {
+      annoBody, tags, xywh, svg,
+    } = this.state;
     canvases.forEach((canvas) => {
       const storageAdapter = config.annotation.adapter(canvas.id);
       const anno = new WebAnnotation({
@@ -136,6 +159,7 @@ class AnnotationCreation extends Component {
         canvasId: canvas.id,
         id: (annotation && annotation.id) || `${uuid()}`,
         svg,
+        tags,
         xywh,
       }).toJson();
       if (annotation) {
