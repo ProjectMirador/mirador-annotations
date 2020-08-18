@@ -50,7 +50,6 @@ describe('WebAnnotation', () => {
     });
     it('with xywh only', () => {
       subject = createSubject({ svg: null });
-      /* expect(subject.target()).toBe('canvasId#xywh=xywh'); */
       expect(subject.target()).toEqual({
         selector: {
           type: 'FragmentSelector',

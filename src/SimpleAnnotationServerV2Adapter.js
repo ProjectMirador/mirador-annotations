@@ -179,10 +179,18 @@ export default class SimpleAnnotationServerV2Adapter {
     }
     v3anno.target = {
       selector: this.createV3AnnoSelector(v2target.selector),
-      source: {
-        id: v2target.full,
-      },
+      source: v2target.full,
     };
+    if (v2target.within) {
+      v3anno.target.source = {
+        id: v2target.full,
+        partOf: {
+          id: v2target.within['@id'],
+          type: 'Manifest',
+        },
+        type: 'Canvas',
+      };
+    }
     return v3anno;
   }
 

@@ -35,7 +35,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.52",
     "lodash": "^4.17.11",
-    "mirador": "^3.0.0-rc.3",
+    "mirador": "^3.0.0-rc.5",
     "prop-types": "^15.7.2",
     "react": "16.x",
     "react-dom": "16.x",
