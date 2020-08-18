@@ -50,22 +50,9 @@ export default class WebAnnotation {
   target() {
     let target = this.canvasId;
     if (this.svg || this.xywh) {
-      if (this.manifestId) {
-        target = {
-          source: {
-            id: this.canvasId,
-            partOf: {
-              id: this.manifestId,
-              type: 'Manifest',
-            },
-            type: 'Canvas',
-          },
-        };
-      } else {
-        target = {
-          source: this.canvasId,
-        };
-      }
+      target = {
+        source: this.source(),
+      };
     }
     if (this.svg) {
       target.selector = {
@@ -89,5 +76,21 @@ export default class WebAnnotation {
       }
     }
     return target;
+  }
+
+  /** */
+  source() {
+    let source = this.canvasId;
+    if (this.manifest) {
+      source = {
+        id: this.canvasId,
+        partOf: {
+          id: this.manifest.id,
+          type: 'Manifest',
+        },
+        type: 'Canvas',
+      };
+    }
+    return source;
   }
 }
