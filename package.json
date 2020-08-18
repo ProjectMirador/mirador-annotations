@@ -26,6 +26,7 @@
     "draft-js": "^0.11.6",
     "draft-js-export-html": "^1.4.1",
     "draft-js-import-html": "^1.4.1",
+    "immutable": "^4.0.0-rc.12",
     "material-ui-color-components": "^0.3.0",
     "paper": "^0.12.11",
     "react-color": "^2.18.1"
@@ -64,7 +65,7 @@
     "jest": "^26.1.0",
     "jest-canvas-mock": "^2.2.0",
     "jest-localstorage-mock": "^2.4.2",
-    "mirador": "^3.0.0-rc.3",
+    "mirador": "^3.0.0-rc.5",
     "nwb": "^0.24.7",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
