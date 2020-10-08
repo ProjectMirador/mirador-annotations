@@ -44,10 +44,11 @@ class ExternalStorageAnnotation extends Component {
 
   /** */
   render() {
-    const { TargetComponent, targetProps } = this.props;
+    const { PluginComponents, TargetComponent, targetProps } = this.props;
     return (
       <TargetComponent
         {...targetProps} // eslint-disable-line react/jsx-props-no-spreading
+        PluginComponents={PluginComponents}
       />
     );
   }
@@ -62,6 +63,7 @@ ExternalStorageAnnotation.propTypes = {
       adapter: PropTypes.func,
     }),
   }).isRequired,
+  PluginComponents: PropTypes.array, // eslint-disable-line react/forbid-prop-types
   receiveAnnotation: PropTypes.func.isRequired,
   TargetComponent: PropTypes.oneOfType([
     PropTypes.func,
@@ -72,6 +74,7 @@ ExternalStorageAnnotation.propTypes = {
 
 ExternalStorageAnnotation.defaultProps = {
   canvases: [],
+  PluginComponents: [],
 };
 
 /** */
