@@ -8,7 +8,7 @@ function createWrapper(props) {
   return shallow(
     <miradorAnnotationPlugin.component
       config={{}}
-      TargetComponent={'<div>hello</div>'}
+      TargetComponent="<div>hello</div>"
       targetProps={{}}
       addCompanionWindow={jest.fn()}
       receiveAnnotation={jest.fn()}
