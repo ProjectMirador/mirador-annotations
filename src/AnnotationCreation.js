@@ -93,19 +93,10 @@ class AnnotationCreation extends Component {
   }
 
   /** */
-  openChooseColor(e) {
+  handleCloseLineWeight(e) {
     this.setState({
-      colorPopoverOpen: true,
-      currentColorType: e.currentTarget.value,
-      popoverAnchorEl: e.currentTarget,
-    });
-  }
-
-  /** */
-  openChooseLineWeight(e) {
-    this.setState({
-      lineWeightPopoverOpen: true,
-      popoverLineWeightAnchorEl: e.currentTarget,
+      lineWeightPopoverOpen: false,
+      popoverLineWeightAnchorEl: null,
     });
   }
 
@@ -119,10 +110,19 @@ class AnnotationCreation extends Component {
   }
 
   /** */
-  handleCloseLineWeight(e) {
+  openChooseColor(e) {
     this.setState({
-      lineWeightPopoverOpen: false,
-      popoverLineWeightAnchorEl: null,
+      colorPopoverOpen: true,
+      currentColorType: e.currentTarget.value,
+      popoverAnchorEl: e.currentTarget,
+    });
+  }
+
+  /** */
+  openChooseLineWeight(e) {
+    this.setState({
+      lineWeightPopoverOpen: true,
+      popoverLineWeightAnchorEl: e.currentTarget,
     });
   }
 
