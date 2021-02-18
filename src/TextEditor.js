@@ -23,21 +23,6 @@ class TextEditor extends Component {
   }
 
   /** */
-  onChange(editorState) {
-    const { updateAnnotationBody } = this.props;
-    this.setState({ editorState });
-    if (updateAnnotationBody) {
-      const options = {
-        inlineStyles: {
-          BOLD: { element: 'b' },
-          ITALIC: { element: 'i' },
-        },
-      };
-      updateAnnotationBody(stateToHTML(editorState.getCurrentContent(), options).toString());
-    }
-  }
-
-  /** */
   handleFormating(e, newFormat) {
     const { editorState } = this.state;
     this.onChange(RichUtils.toggleInlineStyle(editorState, newFormat));
@@ -51,6 +36,21 @@ class TextEditor extends Component {
       return 'handled';
     }
     return 'not-handled';
+  }
+
+  /** */
+  onChange(editorState) {
+    const { updateAnnotationBody } = this.props;
+    this.setState({ editorState });
+    if (updateAnnotationBody) {
+      const options = {
+        inlineStyles: {
+          BOLD: { element: 'b' },
+          ITALIC: { element: 'i' },
+        },
+      };
+      updateAnnotationBody(stateToHTML(editorState.getCurrentContent(), options).toString());
+    }
   }
 
   /** */
