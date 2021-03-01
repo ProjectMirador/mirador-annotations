@@ -208,13 +208,24 @@ class AnnotationCreation extends Component {
   /** */
   render() {
     const {
-      annotation, classes, closeCompanionWindow, id, windowId,
+      annotation, classes, closeCompanionWindow, config, id, windowId,
     } = this.props;
 
     const {
       activeTool, colorPopoverOpen, currentColorType, fillColor, popoverAnchorEl, strokeColor,
       popoverLineWeightAnchorEl, lineWeightPopoverOpen, strokeWidth, closedMode, annoBody, svg,
     } = this.state;
+    const availableTools = (config.annotation && config.annotation.availableTools) || [
+      'cursor',
+      'edit',
+      'rectangle',
+      'ellipse',
+      'polygon',
+      'freehand',
+    ];
+    const displayDivider = (availableTools.indexOf('cursor') !== -1 || availableTools.indexOf('edit') !== -1)
+      && (availableTools.indexOf('rectangle') !== -1 || availableTools.indexOf('ellipse') !== -1
+      || availableTools.indexOf('polygon') !== -1 || availableTools.indexOf('freehand') !== -1);
     return (
       <CompanionWindow
         title={annotation ? 'Edit annotation' : 'New annotation'}
@@ -248,14 +259,18 @@ class AnnotationCreation extends Component {
                   aria-label="tool selection"
                   size="small"
                 >
-                  <ToggleButton value="cursor" aria-label="select cursor">
-                    <CursorIcon />
-                  </ToggleButton>
-                  <ToggleButton value="edit" aria-label="select cursor">
-                    <FormatShapesIcon />
-                  </ToggleButton>
+                  { availableTools.indexOf('cursor') !== -1 && (
+                    <ToggleButton value="cursor" aria-label="select cursor">
+                      <CursorIcon />
+                    </ToggleButton>
+                  )}
+                  { availableTools.indexOf('edit') !== -1 && (
+                    <ToggleButton value="edit" aria-label="select cursor">
+                      <FormatShapesIcon />
+                    </ToggleButton>
+                  )}
                 </ToggleButtonGroup>
-                <Divider flexItem orientation="vertical" className={classes.divider} />
+                { displayDivider && <Divider flexItem orientation="vertical" className={classes.divider} /> }
                 <ToggleButtonGroup
                   className={classes.grouped}
                   value={activeTool}
@@ -264,18 +279,26 @@ class AnnotationCreation extends Component {
                   aria-label="tool selection"
                   size="small"
                 >
-                  <ToggleButton value="rectangle" aria-label="add a rectangle">
-                    <RectangleIcon />
-                  </ToggleButton>
-                  <ToggleButton value="ellipse" aria-label="add a circle">
-                    <CircleIcon />
-                  </ToggleButton>
-                  <ToggleButton value="polygon" aria-label="add a polygon">
-                    <PolygonIcon />
-                  </ToggleButton>
-                  <ToggleButton value="freehand" aria-label="free hand polygon">
-                    <GestureIcon />
-                  </ToggleButton>
+                  { availableTools.indexOf('rectangle') !== -1 && (
+                    <ToggleButton value="rectangle" aria-label="add a rectangle">
+                      <RectangleIcon />
+                    </ToggleButton>
+                  )}
+                  { availableTools.indexOf('ellipse') !== -1 && (
+                    <ToggleButton value="ellipse" aria-label="add a circle">
+                      <CircleIcon />
+                    </ToggleButton>
+                  )}
+                  { availableTools.indexOf('polygon') !== -1 && (
+                    <ToggleButton value="polygon" aria-label="add a polygon">
+                      <PolygonIcon />
+                    </ToggleButton>
+                  )}
+                  { availableTools.indexOf('freehand') !== -1 && (
+                    <ToggleButton value="freehand" aria-label="free hand polygon">
+                      <GestureIcon />
+                    </ToggleButton>
+                  )}
                 </ToggleButtonGroup>
               </Paper>
             </Grid>
@@ -426,6 +449,14 @@ AnnotationCreation.propTypes = {
   config: PropTypes.shape({
     annotation: PropTypes.shape({
       adapter: PropTypes.func,
+      availableTools: PropTypes.arrayOf(PropTypes.oneOf([
+        'cursor',
+        'edit',
+        'rectangle',
+        'ellipse',
+        'polygon',
+        'freehand',
+      ])),
     }),
   }).isRequired,
   id: PropTypes.string.isRequired,
