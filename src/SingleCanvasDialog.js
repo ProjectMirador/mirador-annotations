@@ -8,23 +8,38 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
 
+/**
+ * Dialog to enforce single view for annotation creation / editing
+ */
 export class SingleCanvasDialog extends Component {
+  /** */
   constructor(props) {
     super(props);
     this.confirm = this.confirm.bind(this);
   }
 
+  /** */
   confirm() {
-    this.props.switchToSingleCanvasView();
-    this.props.openCreateAnnotationCompanionWindow();
-    this.props.handleClose();
+    const {
+      handleClose,
+      openCreateAnnotationCompanionWindow,
+      switchToSingleCanvasView,
+    } = this.props;
+    switchToSingleCanvasView();
+    openCreateAnnotationCompanionWindow();
+    handleClose();
   }
 
+  /** */
   render() {
+    const {
+      handleClose,
+      open,
+    } = this.props;
     return (
       <Dialog
-        onClose={this.props.hideDialog}
-        open={this.props.open}
+        onClose={handleClose}
+        open={open}
       >
         <DialogTitle disableTypography>
           <Typography variant="h2">
@@ -33,13 +48,14 @@ export class SingleCanvasDialog extends Component {
         </DialogTitle>
         <DialogContent>
           <DialogContentText variant="body2" color="inherit">
-            Annotations can only be edited in single canvas view type. Switch view type to single view now?
+            Annotations can only be edited in single canvas view type.
+            Switch view type to single view now?
           </DialogContentText>
           <DialogActions>
             <Button onClick={this.confirm} variant="contained">
               Switch and start annotating
             </Button>
-            <Button onClick={this.props.handleClose} variant="contained">
+            <Button onClick={handleClose} variant="contained">
               Cancel
             </Button>
           </DialogActions>
@@ -54,8 +70,8 @@ SingleCanvasDialog.propTypes = {
   open: PropTypes.bool,
   openCreateAnnotationCompanionWindow: PropTypes.func.isRequired,
   switchToSingleCanvasView: PropTypes.func.isRequired,
-}
+};
 
 SingleCanvasDialog.defaultProps = {
   open: false,
-}
+};

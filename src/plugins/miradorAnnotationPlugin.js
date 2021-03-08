@@ -6,7 +6,6 @@ import AddBoxIcon from '@material-ui/icons/AddBox';
 import { MiradorMenuButton } from 'mirador/dist/es/src/components/MiradorMenuButton';
 import { SingleCanvasDialog } from '../SingleCanvasDialog';
 
-
 /** */
 class MiradorAnnotation extends Component {
   /** */
@@ -30,15 +29,23 @@ class MiradorAnnotation extends Component {
     });
   }
 
+  /** */
   toggleSingleCanvasDialogOpen() {
+    const { singleCanvasDialogOpen } = this.state;
     this.setState({
-      singleCanvasDialogOpen: !this.state.singleCanvasDialogOpen,
+      singleCanvasDialogOpen: !singleCanvasDialogOpen,
     });
   }
 
   /** */
   render() {
-    const { TargetComponent, targetProps } = this.props;
+    const {
+      switchToSingleCanvasView,
+      TargetComponent,
+      targetProps,
+      windowViewType,
+    } = this.props;
+    const { singleCanvasDialogOpen } = this.state;
     return (
       <div>
         <TargetComponent
@@ -46,18 +53,18 @@ class MiradorAnnotation extends Component {
         />
         <MiradorMenuButton
           aria-label="Create new annotation"
-          onClick={this.props.windowViewType === 'single' ? this.openCreateAnnotationCompanionWindow : this.toggleSingleCanvasDialogOpen}
+          onClick={windowViewType === 'single' ? this.openCreateAnnotationCompanionWindow : this.toggleSingleCanvasDialogOpen}
           size="small"
         >
           <AddBoxIcon />
         </MiradorMenuButton>
         {
-          this.state.singleCanvasDialogOpen && (
+          singleCanvasDialogOpen && (
             <SingleCanvasDialog
-              open={this.state.singleCanvasDialogOpen}
+              open={singleCanvasDialogOpen}
               handleClose={this.toggleSingleCanvasDialogOpen}
               openCreateAnnotationCompanionWindow={this.openCreateAnnotationCompanionWindow}
-              switchToSingleCanvasView={this.props.switchToSingleCanvasView}
+              switchToSingleCanvasView={switchToSingleCanvasView}
             />
           )
         }
@@ -68,11 +75,13 @@ class MiradorAnnotation extends Component {
 
 MiradorAnnotation.propTypes = {
   addCompanionWindow: PropTypes.func.isRequired,
+  switchToSingleCanvasView: PropTypes.func.isRequired,
   TargetComponent: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.node,
   ]).isRequired,
   targetProps: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  windowViewType: PropTypes.string.isRequired,
 };
 
 /** */
@@ -81,10 +90,11 @@ const mapDispatchToProps = (dispatch, props) => ({
     actions.addCompanionWindow(props.targetProps.windowId, { content, ...additionalProps }),
   ),
   switchToSingleCanvasView: () => dispatch(
-    actions.setWindowViewType(props.targetProps.windowId, 'single')
-  )
+    actions.setWindowViewType(props.targetProps.windowId, 'single'),
+  ),
 });
 
+/** */
 const mapStateToProps = (state, props) => ({
   windowViewType: getWindowViewType(state, { windowId: props.targetProps.windowId }),
 });
