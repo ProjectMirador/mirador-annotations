@@ -12,6 +12,8 @@ function createWrapper(props) {
       targetProps={{}}
       addCompanionWindow={jest.fn()}
       receiveAnnotation={jest.fn()}
+      switchToSingleCanvasView={jest.fn()}
+      windowViewType="single"
       {...props}
     />,
   );
