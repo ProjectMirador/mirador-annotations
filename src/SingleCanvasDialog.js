@@ -23,9 +23,11 @@ export class SingleCanvasDialog extends Component {
     const {
       handleClose,
       openCreateAnnotationCompanionWindow,
+      setCanvas,
       switchToSingleCanvasView,
     } = this.props;
     switchToSingleCanvasView();
+    setCanvas();
     openCreateAnnotationCompanionWindow();
     handleClose();
   }
@@ -69,9 +71,11 @@ SingleCanvasDialog.propTypes = {
   handleClose: PropTypes.func.isRequired,
   open: PropTypes.bool,
   openCreateAnnotationCompanionWindow: PropTypes.func.isRequired,
+  setCanvas: PropTypes.func,
   switchToSingleCanvasView: PropTypes.func.isRequired,
 };
 
 SingleCanvasDialog.defaultProps = {
   open: false,
+  setCanvas: () => undefined,
 };

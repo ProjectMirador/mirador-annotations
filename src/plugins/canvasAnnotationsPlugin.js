@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { getVisibleCanvases } from 'mirador/dist/es/src/state/selectors/canvases';
 import * as actions from 'mirador/dist/es/src/state/actions';
+import { getWindowViewType } from 'mirador/dist/es/src/state/selectors';
 import CanvasListItem from '../CanvasListItem';
 import AnnotationActionsContext from '../AnnotationActionsContext';
 
@@ -10,8 +11,8 @@ class CanvasAnnotationsWrapper extends Component {
   /** */
   render() {
     const {
-      addCompanionWindow, canvases, config, receiveAnnotation, TargetComponent,
-      targetProps, annotationsOnCanvases,
+      addCompanionWindow, annotationsOnCanvases, canvases, config, receiveAnnotation,
+      setCanvas, switchToSingleCanvasView, TargetComponent, targetProps, windowViewType,
     } = this.props;
     const props = {
       ...targetProps,
@@ -25,8 +26,11 @@ class CanvasAnnotationsWrapper extends Component {
           canvases,
           config,
           receiveAnnotation,
+          setCanvas,
           storageAdapter: config.annotation.adapter,
+          switchToSingleCanvasView,
           windowId: targetProps.windowId,
+          windowViewType,
         }}
       >
         <TargetComponent
@@ -49,11 +53,14 @@ CanvasAnnotationsWrapper.propTypes = {
     }),
   }).isRequired,
   receiveAnnotation: PropTypes.func.isRequired,
+  setCanvas: PropTypes.func.isRequired,
+  switchToSingleCanvasView: PropTypes.func.isRequired,
   TargetComponent: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.node,
   ]).isRequired,
   targetProps: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  windowViewType: PropTypes.string.isRequired,
 };
 
 CanvasAnnotationsWrapper.defaultProps = {
@@ -65,6 +72,7 @@ CanvasAnnotationsWrapper.defaultProps = {
 function mapStateToProps(state, { targetProps: { windowId } }) {
   const canvases = getVisibleCanvases(state, { windowId });
   const annotationsOnCanvases = {};
+
   canvases.forEach((canvas) => {
     const anno = state.annotations[canvas.id];
     if (anno) {
@@ -75,6 +83,7 @@ function mapStateToProps(state, { targetProps: { windowId } }) {
     annotationsOnCanvases,
     canvases,
     config: state.config,
+    windowViewType: getWindowViewType(state, { windowId }),
   };
 }
 
@@ -85,6 +94,12 @@ const mapDispatchToProps = (dispatch, props) => ({
   ),
   receiveAnnotation: (targetId, id, annotation) => dispatch(
     actions.receiveAnnotation(targetId, id, annotation),
+  ),
+  setCanvas: (canvasId) => dispatch(
+    actions.setCanvas(props.targetProps.windowId, canvasId),
+  ),
+  switchToSingleCanvasView: () => dispatch(
+    actions.setWindowViewType(props.targetProps.windowId, 'single'),
   ),
 });
 

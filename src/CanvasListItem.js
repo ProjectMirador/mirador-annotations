@@ -6,6 +6,7 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import flatten from 'lodash/flatten';
 import AnnotationActionsContext from './AnnotationActionsContext';
+import { SingleCanvasDialog } from './SingleCanvasDialog';
 
 /** */
 class CanvasListItem extends Component {
@@ -15,11 +16,14 @@ class CanvasListItem extends Component {
 
     this.state = {
       isHovering: false,
+      singleCanvasDialogOpen: false,
     };
 
     this.handleMouseHover = this.handleMouseHover.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleEdit = this.handleEdit.bind(this);
+    this.toggleSingleCanvasDialogOpen = this.toggleSingleCanvasDialogOpen.bind(this);
+    this.switchCanvas = this.switchCanvas.bind(this);
   }
 
   /** */
@@ -83,9 +87,40 @@ class CanvasListItem extends Component {
   }
 
   /** */
+  switchCanvas() {
+    const { annotationsOnCanvases, canvases, setCanvas } = this.context;
+    const { annotationid } = this.props;
+    let canvasId;
+    canvases.forEach((canvas) => {
+      if (annotationsOnCanvases[canvas.id]) {
+        Object.entries(annotationsOnCanvases[canvas.id]).forEach(([key, value], i) => {
+          if (value.json && value.json.items) {
+            const annotation = value.json.items.find((anno) => anno.id === annotationid);
+            if (annotation) {
+              canvasId = canvas.id;
+            }
+          }
+        });
+      }
+    });
+    if (canvasId) {
+      setCanvas(canvasId);
+    }
+  }
+
+  /** */
+  toggleSingleCanvasDialogOpen() {
+    const { singleCanvasDialogOpen } = this.state;
+    this.setState({
+      singleCanvasDialogOpen: !singleCanvasDialogOpen,
+    });
+  }
+
+  /** */
   render() {
     const { children } = this.props;
-    const { isHovering } = this.state;
+    const { isHovering, singleCanvasDialogOpen } = this.state;
+    const { windowViewType, switchToSingleCanvasView } = this.context;
     return (
       <div
         onMouseEnter={this.handleMouseHover}
@@ -107,7 +142,11 @@ class CanvasListItem extends Component {
                 right: 0,
               }}
             >
-              <ToggleButton aria-label="Edit" onClick={this.handleEdit} value="edit">
+              <ToggleButton
+                aria-label="Edit"
+                onClick={windowViewType === 'single' ? this.handleEdit : this.toggleSingleCanvasDialogOpen}
+                value="edit"
+              >
                 <EditIcon />
               </ToggleButton>
               <ToggleButton aria-label="Delete" onClick={this.handleDelete} value="delete">
@@ -115,6 +154,15 @@ class CanvasListItem extends Component {
               </ToggleButton>
             </ToggleButtonGroup>
           </div>
+        )}
+        {windowViewType !== 'single' && (
+          <SingleCanvasDialog
+            handleClose={this.toggleSingleCanvasDialogOpen}
+            open={singleCanvasDialogOpen}
+            openCreateAnnotationCompanionWindow={this.handleEdit}
+            setCanvas={this.switchCanvas}
+            switchToSingleCanvasView={switchToSingleCanvasView}
+          />
         )}
         <li
           {...this.props} // eslint-disable-line react/jsx-props-no-spreading
