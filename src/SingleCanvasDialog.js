@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 /**
  * Dialog to enforce single view for annotation creation / editing
  */
-export class SingleCanvasDialog extends Component {
+class SingleCanvasDialog extends Component {
   /** */
   constructor(props) {
     super(props);
@@ -22,13 +22,9 @@ export class SingleCanvasDialog extends Component {
   confirm() {
     const {
       handleClose,
-      openCreateAnnotationCompanionWindow,
-      setCanvas,
       switchToSingleCanvasView,
     } = this.props;
     switchToSingleCanvasView();
-    setCanvas();
-    openCreateAnnotationCompanionWindow();
     handleClose();
   }
 
@@ -55,7 +51,7 @@ export class SingleCanvasDialog extends Component {
           </DialogContentText>
           <DialogActions>
             <Button onClick={this.confirm} variant="contained">
-              Switch and start annotating
+              Switch to single view
             </Button>
             <Button onClick={handleClose} variant="contained">
               Cancel
@@ -70,12 +66,13 @@ export class SingleCanvasDialog extends Component {
 SingleCanvasDialog.propTypes = {
   handleClose: PropTypes.func.isRequired,
   open: PropTypes.bool,
-  openCreateAnnotationCompanionWindow: PropTypes.func.isRequired,
-  setCanvas: PropTypes.func,
+  // openCreateAnnotationCompanionWindow: PropTypes.func.isRequired,
+  // setCanvas: PropTypes.func,
   switchToSingleCanvasView: PropTypes.func.isRequired,
 };
 
 SingleCanvasDialog.defaultProps = {
   open: false,
-  setCanvas: () => undefined,
 };
+
+export default SingleCanvasDialog;

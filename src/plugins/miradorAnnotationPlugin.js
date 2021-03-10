@@ -4,7 +4,7 @@ import * as actions from 'mirador/dist/es/src/state/actions';
 import { getWindowViewType } from 'mirador/dist/es/src/state/selectors';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import { MiradorMenuButton } from 'mirador/dist/es/src/components/MiradorMenuButton';
-import { SingleCanvasDialog } from '../SingleCanvasDialog';
+import SingleCanvasDialog from '../SingleCanvasDialog';
 
 /** */
 class MiradorAnnotation extends Component {
@@ -63,7 +63,6 @@ class MiradorAnnotation extends Component {
             <SingleCanvasDialog
               open={singleCanvasDialogOpen}
               handleClose={this.toggleSingleCanvasDialogOpen}
-              openCreateAnnotationCompanionWindow={this.openCreateAnnotationCompanionWindow}
               switchToSingleCanvasView={switchToSingleCanvasView}
             />
           )

@@ -5,15 +5,34 @@ import * as actions from 'mirador/dist/es/src/state/actions';
 import { getWindowViewType } from 'mirador/dist/es/src/state/selectors';
 import CanvasListItem from '../CanvasListItem';
 import AnnotationActionsContext from '../AnnotationActionsContext';
+import SingleCanvasDialog from '../SingleCanvasDialog';
 
 /** */
 class CanvasAnnotationsWrapper extends Component {
   /** */
+  constructor(props) {
+    super(props);
+    this.state = {
+      singleCanvasDialogOpen: false,
+    };
+    this.toggleSingleCanvasDialogOpen = this.toggleSingleCanvasDialogOpen.bind(this);
+  }
+
+  /** */
+  toggleSingleCanvasDialogOpen() {
+    const { singleCanvasDialogOpen } = this.state;
+    this.setState({
+      singleCanvasDialogOpen: !singleCanvasDialogOpen,
+    });
+  }
+
+  /** */
   render() {
     const {
       addCompanionWindow, annotationsOnCanvases, canvases, config, receiveAnnotation,
-      setCanvas, switchToSingleCanvasView, TargetComponent, targetProps, windowViewType,
+      switchToSingleCanvasView, TargetComponent, targetProps, windowViewType,
     } = this.props;
+    const { singleCanvasDialogOpen } = this.state;
     const props = {
       ...targetProps,
       listContainerComponent: CanvasListItem,
@@ -26,9 +45,8 @@ class CanvasAnnotationsWrapper extends Component {
           canvases,
           config,
           receiveAnnotation,
-          setCanvas,
           storageAdapter: config.annotation.adapter,
-          switchToSingleCanvasView,
+          toggleSingleCanvasDialogOpen: this.toggleSingleCanvasDialogOpen,
           windowId: targetProps.windowId,
           windowViewType,
         }}
@@ -36,6 +54,13 @@ class CanvasAnnotationsWrapper extends Component {
         <TargetComponent
           {...props} // eslint-disable-line react/jsx-props-no-spreading
         />
+        {windowViewType !== 'single' && (
+          <SingleCanvasDialog
+            handleClose={this.toggleSingleCanvasDialogOpen}
+            open={singleCanvasDialogOpen}
+            switchToSingleCanvasView={switchToSingleCanvasView}
+          />
+        )}
       </AnnotationActionsContext.Provider>
     );
   }
@@ -53,7 +78,6 @@ CanvasAnnotationsWrapper.propTypes = {
     }),
   }).isRequired,
   receiveAnnotation: PropTypes.func.isRequired,
-  setCanvas: PropTypes.func.isRequired,
   switchToSingleCanvasView: PropTypes.func.isRequired,
   TargetComponent: PropTypes.oneOfType([
     PropTypes.func,
@@ -94,9 +118,6 @@ const mapDispatchToProps = (dispatch, props) => ({
   ),
   receiveAnnotation: (targetId, id, annotation) => dispatch(
     actions.receiveAnnotation(targetId, id, annotation),
-  ),
-  setCanvas: (canvasId) => dispatch(
-    actions.setCanvas(props.targetProps.windowId, canvasId),
   ),
   switchToSingleCanvasView: () => dispatch(
     actions.setWindowViewType(props.targetProps.windowId, 'single'),
