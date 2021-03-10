@@ -31,6 +31,8 @@ import TextEditor from './TextEditor';
 import WebAnnotation from './WebAnnotation';
 import CursorIcon from './icons/Cursor';
 
+const targetTools = ['cursor', 'edit', 'rectangle', 'ellipse', 'polygon', 'freehand'];
+
 /** */
 class AnnotationCreation extends Component {
   /** */
@@ -62,8 +64,10 @@ class AnnotationCreation extends Component {
         annoState.svg = props.annotation.target.selector.value;
       }
     }
+    const availableTools = (props.config.annotation && props.config.annotation.availableTools)
+      || targetTools;
     this.state = {
-      activeTool: 'cursor',
+      activeTool: availableTools[0],
       annoBody: '',
       closedMode: 'closed',
       colorPopoverOpen: false,
@@ -215,14 +219,7 @@ class AnnotationCreation extends Component {
       activeTool, colorPopoverOpen, currentColorType, fillColor, popoverAnchorEl, strokeColor,
       popoverLineWeightAnchorEl, lineWeightPopoverOpen, strokeWidth, closedMode, annoBody, svg,
     } = this.state;
-    const availableTools = (config.annotation && config.annotation.availableTools) || [
-      'cursor',
-      'edit',
-      'rectangle',
-      'ellipse',
-      'polygon',
-      'freehand',
-    ];
+    const availableTools = (config.annotation && config.annotation.availableTools) || targetTools;
     const displayDivider = (availableTools.indexOf('cursor') !== -1 || availableTools.indexOf('edit') !== -1)
       && (availableTools.indexOf('rectangle') !== -1 || availableTools.indexOf('ellipse') !== -1
       || availableTools.indexOf('polygon') !== -1 || availableTools.indexOf('freehand') !== -1);
@@ -449,14 +446,7 @@ AnnotationCreation.propTypes = {
   config: PropTypes.shape({
     annotation: PropTypes.shape({
       adapter: PropTypes.func,
-      availableTools: PropTypes.arrayOf(PropTypes.oneOf([
-        'cursor',
-        'edit',
-        'rectangle',
-        'ellipse',
-        'polygon',
-        'freehand',
-      ])),
+      availableTools: PropTypes.arrayOf(PropTypes.oneOf(targetTools)),
     }),
   }).isRequired,
   id: PropTypes.string.isRequired,
