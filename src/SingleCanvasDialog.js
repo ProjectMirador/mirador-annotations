@@ -66,8 +66,6 @@ class SingleCanvasDialog extends Component {
 SingleCanvasDialog.propTypes = {
   handleClose: PropTypes.func.isRequired,
   open: PropTypes.bool,
-  // openCreateAnnotationCompanionWindow: PropTypes.func.isRequired,
-  // setCanvas: PropTypes.func,
   switchToSingleCanvasView: PropTypes.func.isRequired,
 };
 
