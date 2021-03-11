@@ -7,6 +7,7 @@ import miradorAnnotationPlugin from '../src/plugins/miradorAnnotationPlugin';
 function createWrapper(props) {
   return shallow(
     <miradorAnnotationPlugin.component
+      canvases={[]}
       config={{}}
       TargetComponent="<div>hello</div>"
       targetProps={{}}

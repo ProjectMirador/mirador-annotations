@@ -30,17 +30,22 @@ class MiradorAnnotation extends Component {
     });
   }
 
+  /** */
   toggleCanvasDownloadDialog(e) {
+    const { annotationDownloadDialogOpen } = this.state;
     const newState = {
-      annotationDownloadDialogOpen: !this.state.annotationDownloadDialogOpen,
-    }
+      annotationDownloadDialogOpen: !annotationDownloadDialogOpen,
+    };
     this.setState(newState);
   }
 
   /** */
   render() {
-    const { canvases, config, TargetComponent, targetProps } = this.props;
-    const showAnnotationDownloadDialog = config.annotation && config.annotation.downloadCanvasAnnotations;
+    const {
+      canvases, config, TargetComponent, targetProps,
+    } = this.props;
+    const { annotationDownloadDialogOpen } = this.state;
+    const showDownloadDialog = config.annotation && config.annotation.downloadCanvasAnnotations;
     return (
       <div>
         <TargetComponent
@@ -53,7 +58,7 @@ class MiradorAnnotation extends Component {
         >
           <AddBoxIcon />
         </MiradorMenuButton>
-        { showAnnotationDownloadDialog && (
+        { showDownloadDialog && (
           <MiradorMenuButton
             aria-label="Download annotation page for canvas"
             onClick={this.toggleCanvasDownloadDialog}
@@ -62,12 +67,12 @@ class MiradorAnnotation extends Component {
             <GetAppIcon />
           </MiradorMenuButton>
         )}
-        { showAnnotationDownloadDialog && (
+        { showDownloadDialog && (
           <AnnotationDownloadDialog
             canvases={canvases}
             config={config}
             handleClose={this.toggleCanvasDownloadDialog}
-            open={this.state.annotationDownloadDialogOpen}
+            open={annotationDownloadDialogOpen}
           />
         )}
       </div>
@@ -79,13 +84,13 @@ MiradorAnnotation.propTypes = {
   addCompanionWindow: PropTypes.func.isRequired,
   canvases: PropTypes.arrayOf(
     PropTypes.shape({ id: PropTypes.string, index: PropTypes.number }),
-  ),
+  ).isRequired,
   config: PropTypes.shape({
     annotation: PropTypes.shape({
       adapter: PropTypes.func,
       downloadCanvasAnnotations: PropTypes.bool,
     }),
-  }),
+  }).isRequired,
   TargetComponent: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.node,
@@ -100,12 +105,11 @@ const mapDispatchToProps = (dispatch, props) => ({
   ),
 });
 
-const mapStateToProps = function mapStateToProps(state, { targetProps: { windowId } }) {
-  return {
-    canvases: getVisibleCanvases(state, { windowId }),
-    config: state.config,
-  };
-}
+/** */
+const mapStateToProps = (state, { targetProps: { windowId } }) => ({
+  canvases: getVisibleCanvases(state, { windowId }),
+  config: state.config,
+});
 
 export default {
   component: MiradorAnnotation,
