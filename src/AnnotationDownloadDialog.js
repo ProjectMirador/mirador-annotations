@@ -86,15 +86,14 @@ export class AnnotationDownloadDialog extends Component {
                   component="a"
                   key={dl.canvasId}
                   aria-label={`Download annotations for ${dl.label}`}
-                  startIcon={<GetAppIcon />}
                   href={dl.url}
-                  download={`annotations-${dl.id}.json`}
+                  download={`${dl.id}.json`}
                 >
                   <ListItemIcon>
                     <GetAppIcon />
                   </ListItemIcon>
                   <ListItemText>
-                    {`Download annotations for canvas "${dl.label}"`}
+                    {`Download annotations for "${dl.label}"`}
                   </ListItemText>
                 </ListItem>
               ))}

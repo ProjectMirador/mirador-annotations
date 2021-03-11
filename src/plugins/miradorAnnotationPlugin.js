@@ -6,6 +6,7 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import { MiradorMenuButton } from 'mirador/dist/es/src/components/MiradorMenuButton';
 import { getVisibleCanvases } from 'mirador/dist/es/src/state/selectors/canvases';
 import { AnnotationDownloadDialog } from '../AnnotationDownloadDialog';
+import LocalStorageAdapter from '../LocalStorageAdapter';
 
 /** */
 class MiradorAnnotation extends Component {
@@ -45,7 +46,9 @@ class MiradorAnnotation extends Component {
       canvases, config, TargetComponent, targetProps,
     } = this.props;
     const { annotationDownloadDialogOpen } = this.state;
-    const showDownloadDialog = config.annotation && config.annotation.downloadCanvasAnnotations;
+    const storageAdapter = config.annotation && config.annotation.adapter('poke');
+    const offerDownloadDialog = config.annotation && storageAdapter instanceof LocalStorageAdapter
+      && config.annotation.downloadLocalStorageAnnotations;
     return (
       <div>
         <TargetComponent
@@ -58,16 +61,16 @@ class MiradorAnnotation extends Component {
         >
           <AddBoxIcon />
         </MiradorMenuButton>
-        { showDownloadDialog && (
+        { offerDownloadDialog && (
           <MiradorMenuButton
-            aria-label="Download annotation page for canvas"
+            aria-label="Download local annotations for visible items"
             onClick={this.toggleCanvasDownloadDialog}
             size="small"
           >
             <GetAppIcon />
           </MiradorMenuButton>
         )}
-        { showDownloadDialog && (
+        { offerDownloadDialog && (
           <AnnotationDownloadDialog
             canvases={canvases}
             config={config}
@@ -88,7 +91,7 @@ MiradorAnnotation.propTypes = {
   config: PropTypes.shape({
     annotation: PropTypes.shape({
       adapter: PropTypes.func,
-      downloadCanvasAnnotations: PropTypes.bool,
+      downloadLocalStorageAnnotations: PropTypes.bool,
     }),
   }).isRequired,
   TargetComponent: PropTypes.oneOfType([
