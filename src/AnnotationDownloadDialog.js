@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import PropTypes, { bool } from 'prop-types';
 
 /** */
-export class AnnotationDownloadDialog extends Component {
+class AnnotationDownloadDialog extends Component {
   /** */
   constructor(props) {
     super(props);
@@ -117,3 +117,5 @@ AnnotationDownloadDialog.propTypes = {
   handleClose: PropTypes.func.isRequired,
   open: bool.isRequired,
 };
+
+export default AnnotationDownloadDialog;

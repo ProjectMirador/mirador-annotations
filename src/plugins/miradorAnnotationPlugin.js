@@ -5,7 +5,7 @@ import AddBoxIcon from '@material-ui/icons/AddBox';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { MiradorMenuButton } from 'mirador/dist/es/src/components/MiradorMenuButton';
 import { getVisibleCanvases } from 'mirador/dist/es/src/state/selectors/canvases';
-import { AnnotationDownloadDialog } from '../AnnotationDownloadDialog';
+import AnnotationDownloadDialog from '../AnnotationDownloadDialog';
 import LocalStorageAdapter from '../LocalStorageAdapter';
 
 /** */
