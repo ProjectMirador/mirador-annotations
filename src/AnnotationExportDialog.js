@@ -11,12 +11,12 @@ import Typography from '@material-ui/core/Typography';
 import PropTypes, { bool } from 'prop-types';
 
 /** */
-class AnnotationDownloadDialog extends Component {
+class AnnotationExportDialog extends Component {
   /** */
   constructor(props) {
     super(props);
     this.state = {
-      downloadLinks: [],
+      exportLinks: [],
     };
     this.closeDialog = this.closeDialog.bind(this);
   }
@@ -46,8 +46,8 @@ class AnnotationDownloadDialog extends Component {
         return resolvedAcc;
       };
       if (canvases && canvases.length > 0) {
-        canvases.reduce(reducer, []).then((downloadLinks) => {
-          this.setState({ downloadLinks });
+        canvases.reduce(reducer, []).then((exportLinks) => {
+          this.setState({ exportLinks });
         });
       }
     }
@@ -56,36 +56,36 @@ class AnnotationDownloadDialog extends Component {
   /** */
   closeDialog() {
     const { handleClose } = this.props;
-    this.setState({ downloadLinks: [] });
+    this.setState({ exportLinks: [] });
     handleClose();
   }
 
   /** */
   render() {
     const { handleClose, open } = this.props;
-    const { downloadLinks } = this.state;
+    const { exportLinks } = this.state;
     return (
       <Dialog
-        aria-labelledby="annotation-download-dialog-title"
-        id="annotation-download-dialog"
+        aria-labelledby="annotation-export-dialog-title"
+        id="annotation-export-dialog"
         onClose={handleClose}
         onEscapeKeyDown={this.closeDialog}
         open={open}
       >
-        <DialogTitle id="annotation-download-dialog-title" disableTypography>
-          <Typography variant="h2">Download Annotations</Typography>
+        <DialogTitle id="annotation-export-dialog-title" disableTypography>
+          <Typography variant="h2">Export Annotations</Typography>
         </DialogTitle>
         <DialogContent>
-          { downloadLinks === undefined || downloadLinks.length === 0 ? (
+          { exportLinks === undefined || exportLinks.length === 0 ? (
             <Typography variant="body1">No annotations stored yet.</Typography>
           ) : (
             <List>
-              { downloadLinks.map((dl) => (
+              { exportLinks.map((dl) => (
                 <ListItem
                   button
                   component="a"
                   key={dl.canvasId}
-                  aria-label={`Download annotations for ${dl.label}`}
+                  aria-label={`Export annotations for ${dl.label}`}
                   href={dl.url}
                   download={`${dl.id}.json`}
                 >
@@ -93,7 +93,7 @@ class AnnotationDownloadDialog extends Component {
                     <GetAppIcon />
                   </ListItemIcon>
                   <ListItemText>
-                    {`Download annotations for "${dl.label}"`}
+                    {`Export annotations for "${dl.label}"`}
                   </ListItemText>
                 </ListItem>
               ))}
@@ -105,7 +105,7 @@ class AnnotationDownloadDialog extends Component {
   }
 }
 
-AnnotationDownloadDialog.propTypes = {
+AnnotationExportDialog.propTypes = {
   canvases: PropTypes.arrayOf(
     PropTypes.shape({ id: PropTypes.string, index: PropTypes.number }),
   ).isRequired,
@@ -118,4 +118,4 @@ AnnotationDownloadDialog.propTypes = {
   open: bool.isRequired,
 };
 
-export default AnnotationDownloadDialog;
+export default AnnotationExportDialog;

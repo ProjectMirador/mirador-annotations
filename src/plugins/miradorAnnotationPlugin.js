@@ -5,7 +5,7 @@ import AddBoxIcon from '@material-ui/icons/AddBox';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { MiradorMenuButton } from 'mirador/dist/es/src/components/MiradorMenuButton';
 import { getVisibleCanvases } from 'mirador/dist/es/src/state/selectors/canvases';
-import AnnotationDownloadDialog from '../AnnotationDownloadDialog';
+import AnnotationExportDialog from '../AnnotationExportDialog';
 import LocalStorageAdapter from '../LocalStorageAdapter';
 
 /** */
@@ -14,10 +14,10 @@ class MiradorAnnotation extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      annotationDownloadDialogOpen: false,
+      annotationExportDialogOpen: false,
     };
     this.openCreateAnnotationCompanionWindow = this.openCreateAnnotationCompanionWindow.bind(this);
-    this.toggleCanvasDownloadDialog = this.toggleCanvasDownloadDialog.bind(this);
+    this.toggleCanvasExportDialog = this.toggleCanvasExportDialog.bind(this);
   }
 
   /** */
@@ -32,10 +32,10 @@ class MiradorAnnotation extends Component {
   }
 
   /** */
-  toggleCanvasDownloadDialog(e) {
-    const { annotationDownloadDialogOpen } = this.state;
+  toggleCanvasExportDialog(e) {
+    const { annotationExportDialogOpen } = this.state;
     const newState = {
-      annotationDownloadDialogOpen: !annotationDownloadDialogOpen,
+      annotationExportDialogOpen: !annotationExportDialogOpen,
     };
     this.setState(newState);
   }
@@ -45,10 +45,10 @@ class MiradorAnnotation extends Component {
     const {
       canvases, config, TargetComponent, targetProps,
     } = this.props;
-    const { annotationDownloadDialogOpen } = this.state;
+    const { annotationExportDialogOpen } = this.state;
     const storageAdapter = config.annotation && config.annotation.adapter('poke');
-    const offerDownloadDialog = config.annotation && storageAdapter instanceof LocalStorageAdapter
-      && config.annotation.downloadLocalStorageAnnotations;
+    const offerExportDialog = config.annotation && storageAdapter instanceof LocalStorageAdapter
+      && config.annotation.exportLocalStorageAnnotations;
     return (
       <div>
         <TargetComponent
@@ -61,21 +61,21 @@ class MiradorAnnotation extends Component {
         >
           <AddBoxIcon />
         </MiradorMenuButton>
-        { offerDownloadDialog && (
+        { offerExportDialog && (
           <MiradorMenuButton
-            aria-label="Download local annotations for visible items"
-            onClick={this.toggleCanvasDownloadDialog}
+            aria-label="Export local annotations for visible items"
+            onClick={this.toggleCanvasExportDialog}
             size="small"
           >
             <GetAppIcon />
           </MiradorMenuButton>
         )}
-        { offerDownloadDialog && (
-          <AnnotationDownloadDialog
+        { offerExportDialog && (
+          <AnnotationExportDialog
             canvases={canvases}
             config={config}
-            handleClose={this.toggleCanvasDownloadDialog}
-            open={annotationDownloadDialogOpen}
+            handleClose={this.toggleCanvasExportDialog}
+            open={annotationExportDialogOpen}
           />
         )}
       </div>
@@ -91,7 +91,7 @@ MiradorAnnotation.propTypes = {
   config: PropTypes.shape({
     annotation: PropTypes.shape({
       adapter: PropTypes.func,
-      downloadLocalStorageAnnotations: PropTypes.bool,
+      exportLocalStorageAnnotations: PropTypes.bool,
     }),
   }).isRequired,
   TargetComponent: PropTypes.oneOfType([
