@@ -36,4 +36,16 @@ describe('AnnotationCreation', () => {
     wrapper = createWrapper();
     expect(wrapper.dive().find(TextEditor).length).toBe(1);
   });
+  it('can handle annotations without target selector', () => {
+    wrapper = createWrapper({
+      annotation: {
+        body: {
+          purpose: 'commenting',
+          value: 'Foo bar',
+        },
+        target: {},
+      },
+    });
+    wrapper.dive();
+  });
 });
