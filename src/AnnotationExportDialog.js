@@ -3,12 +3,24 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import GetAppIcon from '@material-ui/icons/GetApp';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import MenuList from '@material-ui/core/MenuList';
+import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import PropTypes, { bool } from 'prop-types';
+import { withStyles } from '@material-ui/core';
+
+const styles = theme => ({
+  listitem: {
+    '&:focus': {
+      backgroundColor: theme.palette.action.focus,
+    },
+    '&:hover': {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+})
 
 /** */
 class AnnotationExportDialog extends Component {
@@ -62,7 +74,7 @@ class AnnotationExportDialog extends Component {
 
   /** */
   render() {
-    const { handleClose, open } = this.props;
+    const { classes, handleClose, open } = this.props;
     const { exportLinks } = this.state;
     return (
       <Dialog
@@ -79,10 +91,11 @@ class AnnotationExportDialog extends Component {
           { exportLinks === undefined || exportLinks.length === 0 ? (
             <Typography variant="body1">No annotations stored yet.</Typography>
           ) : (
-            <List>
+            <MenuList>
               { exportLinks.map((dl) => (
-                <ListItem
+                <MenuItem
                   button
+                  className={classes.listitem}
                   component="a"
                   key={dl.canvasId}
                   aria-label={`Export annotations for ${dl.label}`}
@@ -95,9 +108,9 @@ class AnnotationExportDialog extends Component {
                   <ListItemText>
                     {`Export annotations for "${dl.label}"`}
                   </ListItemText>
-                </ListItem>
+                </MenuItem>
               ))}
-            </List>
+            </MenuList>
           )}
         </DialogContent>
       </Dialog>
@@ -118,4 +131,4 @@ AnnotationExportDialog.propTypes = {
   open: bool.isRequired,
 };
 
-export default AnnotationExportDialog;
+export default withStyles(styles)(AnnotationExportDialog);
