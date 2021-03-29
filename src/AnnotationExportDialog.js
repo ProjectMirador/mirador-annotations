@@ -11,7 +11,8 @@ import Typography from '@material-ui/core/Typography';
 import PropTypes, { bool } from 'prop-types';
 import { withStyles } from '@material-ui/core';
 
-const styles = theme => ({
+/** */
+const styles = (theme) => ({
   listitem: {
     '&:focus': {
       backgroundColor: theme.palette.action.focus,
@@ -20,7 +21,7 @@ const styles = theme => ({
       backgroundColor: theme.palette.action.hover,
     },
   },
-})
+});
 
 /** */
 class AnnotationExportDialog extends Component {
@@ -122,6 +123,7 @@ AnnotationExportDialog.propTypes = {
   canvases: PropTypes.arrayOf(
     PropTypes.shape({ id: PropTypes.string, index: PropTypes.number }),
   ).isRequired,
+  classes: PropTypes.objectOf(PropTypes.string),
   config: PropTypes.shape({
     annotation: PropTypes.shape({
       adapter: PropTypes.func,
@@ -129,6 +131,10 @@ AnnotationExportDialog.propTypes = {
   }).isRequired,
   handleClose: PropTypes.func.isRequired,
   open: bool.isRequired,
+};
+
+AnnotationExportDialog.defaultProps = {
+  classes: {},
 };
 
 export default withStyles(styles)(AnnotationExportDialog);
