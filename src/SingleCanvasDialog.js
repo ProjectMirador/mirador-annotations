@@ -36,28 +36,32 @@ class SingleCanvasDialog extends Component {
     } = this.props;
     return (
       <Dialog
+        aria-labelledby="single-canvas-dialog-title"
+        fullWidth
+        maxWidth="sm"
         onClose={handleClose}
+        onEscapeKeyDown={handleClose}
         open={open}
       >
-        <DialogTitle disableTypography>
+        <DialogTitle id="single-canvas-dialog-title" disableTypography>
           <Typography variant="h2">
             Switch view type to single view?
           </Typography>
         </DialogTitle>
         <DialogContent>
-          <DialogContentText variant="body2" color="inherit">
+          <DialogContentText variant="body1" color="inherit">
             Annotations can only be edited in single canvas view type.
             Switch view type to single view now?
           </DialogContentText>
-          <DialogActions>
-            <Button onClick={this.confirm} variant="contained">
-              Switch to single view
-            </Button>
-            <Button onClick={handleClose} variant="contained">
-              Cancel
-            </Button>
-          </DialogActions>
         </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button color="primary" onClick={this.confirm} variant="contained">
+            Switch to single view
+          </Button>
+        </DialogActions>
       </Dialog>
     );
   }
