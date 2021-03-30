@@ -77,7 +77,6 @@ export default class SimpleAnnotationServerV2Adapter {
       motivation: 'oa:commenting',
       on: {
         '@type': 'oa:SpecificResource',
-        full: v3anno.target.source.id,
       },
     };
     // copy id if it is SAS-generated
