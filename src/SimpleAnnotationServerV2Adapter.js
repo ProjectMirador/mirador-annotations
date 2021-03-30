@@ -107,7 +107,7 @@ export default class SimpleAnnotationServerV2Adapter {
           : v3anno.target.source;
         if (v3anno.target.source.partOf) {
           v2anno.on.within = {
-            '@id': v3anno.target.source.partOf.id 
+            '@id': v3anno.target.source.partOf.id
               ? v3anno.target.source.partOf.id
               : v3anno.target.source.partOf,
             '@type': 'sc:Manifest',
