@@ -46,7 +46,7 @@ class AnnotationExportDialog extends Component {
         const content = await store.all();
         if (content) {
           // eslint-disable-next-line no-underscore-dangle
-          const label = canvas.__jsonld.label || canvas.id;
+          const label = (canvas.__jsonld && canvas.__jsonld.label) || canvas.id;
           const data = new Blob([JSON.stringify(content)], { type: 'application/json' });
           const url = window.URL.createObjectURL(data);
           return [...resolvedAcc, {
@@ -121,7 +121,7 @@ class AnnotationExportDialog extends Component {
 
 AnnotationExportDialog.propTypes = {
   canvases: PropTypes.arrayOf(
-    PropTypes.shape({ id: PropTypes.string, index: PropTypes.number }),
+    PropTypes.shape({ id: PropTypes.string }),
   ).isRequired,
   classes: PropTypes.objectOf(PropTypes.string),
   config: PropTypes.shape({

@@ -1,6 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { MiradorMenuButton } from 'mirador/dist/es/src/components/MiradorMenuButton';
+import LocalStorageAdapter from '../src/LocalStorageAdapter';
 import miradorAnnotationPlugin from '../src/plugins/miradorAnnotationPlugin';
 
 /** */
@@ -38,5 +39,39 @@ describe('MiradorAnnotation', () => {
         position: 'right',
       },
     );
+  });
+  it('renders no export button if export or LocalStorageAdapter are not configured', () => {
+    wrapper = createWrapper();
+    expect(wrapper.find(MiradorMenuButton).some({ 'aria-label': 'Export local annotations for visible items' })).toBe(false);
+
+    wrapper = createWrapper({
+      config: {
+        annotation: {
+          adapter: () => () => {},
+          exportLocalStorageAnnotations: true,
+        },
+      },
+    });
+    expect(wrapper.find(MiradorMenuButton).some({ 'aria-label': 'Export local annotations for visible items' })).toBe(false);
+
+    wrapper = createWrapper({
+      config: {
+        annotation: {
+          adapter: (canvasId) => new LocalStorageAdapter(`test://?canvasId=${canvasId}`),
+        },
+      },
+    });
+    expect(wrapper.find(MiradorMenuButton).some({ 'aria-label': 'Export local annotations for visible items' })).toBe(false);
+  });
+  it('renders export button if export and LocalStorageAdapter are configured', () => {
+    wrapper = createWrapper({
+      config: {
+        annotation: {
+          adapter: (canvasId) => new LocalStorageAdapter(`test://?canvasId=${canvasId}`),
+          exportLocalStorageAnnotations: true,
+        },
+      },
+    });
+    expect(wrapper.find(MiradorMenuButton).some({ 'aria-label': 'Export local annotations for visible items' })).toBe(true);
   });
 });
