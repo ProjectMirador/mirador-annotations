@@ -40,4 +40,12 @@ describe('MiradorAnnotation', () => {
       },
     );
   });
+  it('opens single canvas view dialog if not in single view', () => {
+    wrapper = createWrapper({
+      windowViewType: 'book',
+    });
+    expect(wrapper.instance().state.singleCanvasDialogOpen).toBe(false);
+    wrapper.find(MiradorMenuButton).simulate('click');
+    expect(wrapper.instance().state.singleCanvasDialogOpen).toBe(true);
+  });
 });
