@@ -101,11 +101,19 @@ export default class SimpleAnnotationServerV2Adapter {
       } else {
         v2anno.on.selector = this.createV2AnnoSelector(v3anno.target.selector);
       }
-      if (v3anno.target.source.partOf) {
-        v2anno.on.within = {
-          '@id': v3anno.target.source.partOf.id,
-          '@type': 'sc:Manifest',
-        };
+
+      if (v3anno.target.source) {
+        v2anno.on.full = v3anno.target.source.id
+          ? v3anno.target.source.id
+          : v3anno.target.source;
+        if (v3anno.target.source.partOf) {
+          v2anno.on.within = {
+            '@id': v3anno.target.source.partOf.id 
+              ? v3anno.target.source.partOf.id
+              : v3anno.target.source.partOf,
+            '@type': 'sc:Manifest',
+          };
+        }
       }
     }
     return v2anno;
