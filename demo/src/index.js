@@ -9,7 +9,7 @@ const config = {
   annotation: {
     adapter: (canvasId) => new LocalStorageAdapter(`localStorage://?canvasId=${canvasId}`),
     // adapter: (canvasId) => new AnnototAdapter(canvasId, endpointUrl),
-    exportLocalStorageAnnotations: false,
+    exportLocalStorageAnnotations: false, // display annotation JSON export button
   },
   id: 'demo',
   window: {
