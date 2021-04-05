@@ -20,6 +20,12 @@ import FormatShapesIcon from '@material-ui/icons/FormatShapes';
 import Popover from '@material-ui/core/Popover';
 import Divider from '@material-ui/core/Divider';
 import MenuItem from '@material-ui/core/MenuItem';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
+import TextField from '@material-ui/core/TextField';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import MenuList from '@material-ui/core/MenuList';
 import { SketchPicker } from 'react-color';
@@ -30,43 +36,52 @@ import AnnotationDrawing from './AnnotationDrawing';
 import TextEditor from './TextEditor';
 import WebAnnotation from './WebAnnotation';
 import CursorIcon from './icons/Cursor';
-
+import InsertPhotoIcon from '@material-ui/icons/InsertPhoto';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+//
 /** */
 class AnnotationCreation extends Component {
   /** */
   constructor(props) {
     super(props);
     const annoState = {};
+    annoState.image = false
     if (props.annotation) {
       if (Array.isArray(props.annotation.body)) {
         annoState.tags = [];
         props.annotation.body.forEach((body) => {
-          if (body.purpose === 'tagging') {
+          if (body.purpose === 'tagging' && body.type === 'TextualBody') {
             annoState.tags.push(body.value);
-          } else {
-            annoState.annoBody = body.value;
+          } else if (body.type === 'TextualBody') {
+            annoState.textBody = body.value;
+          } else if (body.type === 'ImageBody') {
+            annoState.textBody = body.value;
+            annoState.image = body.image;
+          }
+        });
+      } else if (props.annotation.body.type === 'TextualBody')  {
+        annoState.textBody = props.annotation.body.value;
+      } else if (props.annotation.body.type === 'ImageBody') {
+        annoState.textBody = props.annotation.body.value;
+        annoState.image = props.annotation.body.image;
+      }
+      if (Array.isArray(props.annotation.target.selector)) {
+        props.annotation.target.selector.forEach((selector) => {
+          if (selector.type === 'SvgSelector') {
+            annoState.svg = selector.value;
+          } else if (selector.type === 'FragmentSelector') {
+            annoState.xywh = selector.value.replace('xywh=', '');
           }
         });
       } else {
-        annoState.annoBody = props.annotation.body.value;
-      }
-      if (props.annotation.target.selector) {
-        if (Array.isArray(props.annotation.target.selector)) {
-          props.annotation.target.selector.forEach((selector) => {
-            if (selector.type === 'SvgSelector') {
-              annoState.svg = selector.value;
-            } else if (selector.type === 'FragmentSelector') {
-              annoState.xywh = selector.value.replace('xywh=', '');
-            }
-          });
-        } else {
-          annoState.svg = props.annotation.target.selector.value;
-        }
+        annoState.svg = props.annotation.target.selector.value;
       }
     }
+
     this.state = {
       activeTool: 'cursor',
-      annoBody: '',
+      textBody: '',
       closedMode: 'closed',
       colorPopoverOpen: false,
       currentColorType: false,
@@ -78,11 +93,32 @@ class AnnotationCreation extends Component {
       strokeWidth: 1,
       svg: null,
       xywh: null,
+      imgConstraint: false,
+      imgWidth: {
+        value: '',
+        lastSubmittedValue: '',
+        validity: 0,
+      },
+      imgHeight: {
+        value: '',
+        lastSubmittedValue: '',
+        validity: 0,
+      },
+      imgUrl: {
+        value: '',
+        lastSubmittedValue: '',
+        validity: 0,
+      },
+      openAddImageDialog: false,
       ...annoState,
     };
 
     this.submitForm = this.submitForm.bind(this);
-    this.updateBody = this.updateBody.bind(this);
+    this.updateTextBody = this.updateTextBody.bind(this);
+    this.getImgDimensions = this.getImgDimensions.bind(this);
+    this.loadImg = this.loadImg.bind(this);
+    this.setImgWidth = this.setImgWidth.bind(this);
+    this.setImgHeight = this.setImgHeight.bind(this);
     this.updateGeometry = this.updateGeometry.bind(this);
     this.changeTool = this.changeTool.bind(this);
     this.changeClosedMode = this.changeClosedMode.bind(this);
@@ -92,9 +128,142 @@ class AnnotationCreation extends Component {
     this.handleCloseLineWeight = this.handleCloseLineWeight.bind(this);
     this.closeChooseColor = this.closeChooseColor.bind(this);
     this.updateStrokeColor = this.updateStrokeColor.bind(this);
+    this.handleConstraintCheck = this.handleConstraintCheck.bind(this);
+    this.handleImageDialogChange = this.handleImageDialogChange.bind(this);
+    this.handleImageDialogSubmit = this.handleImageDialogSubmit.bind(this);
   }
 
   /** */
+  handleImageDialogChange(open) {
+    const { imgHeight, imgWidth, imgUrl } = this.state;
+
+    this.setState({
+      openAddImageDialog: open,
+      imgUrl: {
+        ...imgUrl,
+        validity: 1,
+        value: imgUrl.lastSubmittedValue,
+      },
+      imgHeight: {
+        ...imgHeight,
+        validity: 1,
+        value: imgHeight.lastSubmittedValue,
+      },
+      imgWidth: {
+        ...imgWidth,
+        validity: 1,
+        value: imgWidth.lastSubmittedValue,
+      }
+    });
+  };
+
+  handleConstraintCheck() {
+    const value = this.state.imgConstraint;
+    this.setState({
+      imgConstraint: !value,
+    });
+  }
+
+  handleImageDialogSubmit() {
+    let open = true;
+    const { imgUrl, imgHeight, imgWidth } = this.state;
+
+    const expression = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
+    const regex = new RegExp(expression);
+    const urlValidity = imgUrl.value.match(regex) ? 1 : 2;
+    const widthValidity = imgWidth.value > 0 ? 1 : 2;
+    const heightValidity = imgHeight.value > 0 ? 1 : 2;
+    if (urlValidity == 1 && widthValidity == 1 && heightValidity == 1) {
+      open = false;
+    }
+    console.log("U imgUrl.value",imgUrl.value)
+    console.log("U imgHeight.value",imgHeight.value)
+    console.log("U imgWidth.value",imgWidth.value)
+
+    this.setState({
+      imgUrl: {
+        value: imgUrl.value,
+        validity: urlValidity,
+        lastSubmittedValue: urlValidity == 1 ? imgUrl.value : imgUrl.lastSubmittedValue,
+      },
+      imgHeight: {
+        value: imgHeight.value,
+        validity: heightValidity,
+        lastSubmittedValue: heightValidity == 1 ? imgHeight.value : imgHeight.lastSubmittedValue,
+      },
+      imgWidth: {
+        value: imgWidth.value,
+        validity: widthValidity,
+        lastSubmittedValue: widthValidity == 1 ? imgWidth.value : imgWidth.lastSubmittedValue,
+      },
+      openAddImageDialog: open,
+    });
+  }
+
+  setImgHeight(value) {
+    const { imgHeight } = this.state
+    this.setState({
+      imgHeight: {
+        ...imgHeight,
+        value,
+      },
+    });
+  }
+
+  setImgUrl(value) {
+    const { imgUrl } = this.state
+    this.setState({
+      imgUrl: {
+        ...imgUrl,
+        value,
+      },
+    });
+  }
+
+  setImgWidth(value) {
+    const { imgWidth } = this.state
+    this.setState({
+      imgWidth: {
+        ...imgWidth,
+        value,
+      },
+    });
+  }
+
+  loadImg(url){
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = url;
+
+      img.onload = () => resolve({height: img.height, width: img.width})
+      img.onerror = reject
+    })
+  }
+
+  async getImgDimensions(url) {
+    const { imgHeight, imgWidth, imgUrl } = this.state;
+    try {
+      const dimensions = await this.loadImg(url);
+
+      this.setState({
+        imgUrl: {
+          ...imgUrl,
+          value: url,
+        },
+        imgHeight: {
+          ...imgHeight,
+          value: dimensions.height || '',
+        },
+        imgWidth: {
+          ...imgWidth,
+          value: dimensions.width || '',
+        },
+      });
+    } catch (e) {
+      console.error('Error!');
+    } 
+  }
+
   handleCloseLineWeight(e) {
     this.setState({
       lineWeightPopoverOpen: false,
@@ -149,22 +318,39 @@ class AnnotationCreation extends Component {
   submitForm(e) {
     e.preventDefault();
     const {
-      annotation, canvases, closeCompanionWindow, receiveAnnotation, config,
+      annotation, canvases, closeCompanionWindow, receiveAnnotation, config, imgConstraint
     } = this.props;
     const {
-      annoBody, tags, xywh, svg,
+      textBody, image, imgWidth, imgHeight, imgUrl, tags, xywh, svg,
     } = this.state;
+    let annoBody = {value: textBody}
+    let imageBody
+
+    if(imgWidth.validity == 1 && imgHeight.validity == 1 && imgUrl.validity == 1){
+      imageBody = {
+        w: imgWidth.value,
+        h: imgHeight.value,
+        url: imgUrl.value,
+        constraint: imgConstraint,
+      }
+    } else {
+      imageBody = image
+    }
+
     canvases.forEach((canvas) => {
       const storageAdapter = config.annotation.adapter(canvas.id);
+
       const anno = new WebAnnotation({
-        body: annoBody,
+        body: {...annoBody},
         canvasId: canvas.id,
         id: (annotation && annotation.id) || `${uuid()}`,
         manifestId: canvas.options.resource.id,
         svg,
         tags,
+        image: imageBody,
         xywh,
       }).toJson();
+
       if (annotation) {
         storageAdapter.update(anno).then((annoPage) => {
           receiveAnnotation(canvas.id, storageAdapter.annotationPageId, annoPage);
@@ -183,6 +369,7 @@ class AnnotationCreation extends Component {
 
   /** */
   changeTool(e, tool) {
+    console.log("tool", tool)
     this.setState({
       activeTool: tool,
     });
@@ -196,8 +383,8 @@ class AnnotationCreation extends Component {
   }
 
   /** */
-  updateBody(annoBody) {
-    this.setState({ annoBody });
+  updateTextBody(textBody) {
+    this.setState({ textBody });
   }
 
   /** */
@@ -214,8 +401,8 @@ class AnnotationCreation extends Component {
     } = this.props;
 
     const {
-      activeTool, colorPopoverOpen, currentColorType, fillColor, popoverAnchorEl, strokeColor,
-      popoverLineWeightAnchorEl, lineWeightPopoverOpen, strokeWidth, closedMode, annoBody, svg,
+      activeTool, colorPopoverOpen, currentColorType, fillColor, openAddImageDialog, popoverAnchorEl, strokeColor,
+      popoverLineWeightAnchorEl, lineWeightPopoverOpen, strokeWidth, closedMode, textBody, image, imgUrl, imgWidth, imgHeight, imgConstraint, svg,
     } = this.state;
     return (
       <CompanionWindow
@@ -225,6 +412,7 @@ class AnnotationCreation extends Component {
       >
         <AnnotationDrawing
           activeTool={activeTool}
+          annotation={annotation}
           fillColor={fillColor}
           strokeColor={strokeColor}
           strokeWidth={strokeWidth}
@@ -338,19 +526,98 @@ class AnnotationCreation extends Component {
                   )
                   : null
               }
-
             </Grid>
           </Grid>
           <Grid container>
             <Grid item xs={12}>
               <Typography variant="overline">
-                Content
+                Image Content
+              </Typography>
+            </Grid>
+            <Grid item xs={12} style={{marginBottom: 10}}>
+              <ToggleButton value="image-icon" aria-label="insert an image" onClick={() => this.handleImageDialogChange(true)}>
+                <InsertPhotoIcon />
+              </ToggleButton>
+            </Grid>
+            <Dialog open={openAddImageDialog} fullWidth minWidth="20%" onClose={() => this.handleImageDialogChange(false)} aria-labelledby="form-dialog-title">
+              <DialogTitle id="form-dialog-title">Insert/Edit Image</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  Source
+                </DialogContentText>
+                <TextField
+                  value={imgUrl.value}
+                  onChange={e => this.setImgUrl(e.target.value)}
+                  onBlur={e => this.getImgDimensions(e.target.value)}
+                  error={imgUrl.validity == 2}
+                  helperText={imgUrl.validity == 2 ? "Invalid Url" : ""}
+                  margin="dense"
+                  id="source"
+                  label="Image Url"
+                  type="url"
+                  fullWidth
+                />
+              </DialogContent>
+              <DialogContent>
+                <DialogContentText>
+                  Dimensions
+                </DialogContentText>
+                <TextField
+                  value={imgWidth.value}
+                  style = {{width: 100, marginRight: 10}}
+                  onChange={e => this.setImgWidth(e.target.value)}
+                  error={imgWidth.validity == 2}
+                  helperText={imgWidth.validity == 2 ? "Invalid Width" : ""}
+                  margin="dense"
+                  id="width"
+                  label="Width"
+                  type="number"
+                  variant="outlined"
+                  autoFocus
+                />
+                <TextField
+                  value={imgHeight.value}
+                  style = {{width: 100, marginLeft: 10 }}
+                  onChange={e => this.setImgHeight(e.target.value)}
+                  error={imgHeight.validity == 2}
+                  helperText={imgHeight.validity == 2 ? "Invalid Height" : ""}
+                  margin="dense"
+                  id="height"
+                  label="Height"
+                  type="number"
+                  variant="outlined" 
+                  autoFocus
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={imgConstraint}
+                      onChange={this.handleConstraintCheck}
+                      inputProps={{ 'aria-label': 'primary checkbox' }}
+                      style = {{ marginLeft: 10 }}
+                    />
+                  }
+                  label="Constraint"
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => this.handleImageDialogChange(false)} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={this.handleImageDialogSubmit} color="primary">
+                  Add
+                </Button>
+              </DialogActions>
+            </Dialog>
+            <Grid item xs={12}>
+              <Typography variant="overline">
+                Text Content
               </Typography>
             </Grid>
             <Grid item xs={12}>
               <TextEditor
-                annoHtml={annoBody}
-                updateAnnotationBody={this.updateBody}
+                annoHtml={textBody}
+                updateAnnotationBody={this.updateTextBody}
               />
             </Grid>
           </Grid>
