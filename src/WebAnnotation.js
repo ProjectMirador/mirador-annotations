@@ -2,7 +2,14 @@
 export default class WebAnnotation {
   /** */
   constructor({
-    canvasId, id, image, xywh, body, tags, svg, manifestId,
+    canvasId,
+    id,
+    image,
+    xywh,
+    body,
+    tags,
+    svg,
+    manifestId,
   }) {
     this.id = id;
     this.canvasId = canvasId;
@@ -35,12 +42,13 @@ export default class WebAnnotation {
         value: this.body.value,
       }
 
-      if(this.image){
-       annoBody.type = 'ImageBody'
+      if (this.image) {
+        annoBody.type = 'ImageBody';
         Object.assign(annoBody, this.image);
       }
       bodies.push(annoBody);
     }
+
     if (this.tags) {
       bodies = bodies.concat(this.tags.map((tag) => ({
         purpose: 'tagging',
