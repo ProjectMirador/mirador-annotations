@@ -25,7 +25,6 @@ import MenuList from '@material-ui/core/MenuList';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -42,6 +41,25 @@ import CursorIcon from './icons/Cursor';
 
 /** */
 class AnnotationCreation extends Component {
+  /** */
+  static checkURL(url) {
+    const expression = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
+    const regex = new RegExp(expression);
+
+    return url.match(regex);
+  }
+
+  /** */
+  static loadImg(url) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = url;
+
+      img.onload = () => resolve({ height: img.height, width: img.width });
+      img.onerror = reject;
+    });
+  }
+
   /** */
   constructor(props) {
     super(props);
@@ -88,21 +106,7 @@ class AnnotationCreation extends Component {
       currentColorType: false,
       fillColor: null,
       imgConstrain: false,
-      lineWeightPopoverOpen: false,
-      popoverAnchorEl: null,
-      popoverLineWeightAnchorEl: null,
-      strokeColor: '#00BFFF',
-      strokeWidth: 1,
-      svg: null,
-      textBody: '',
-      xywh: null,
       imgHeight: {
-        lastSubmittedValue: '',
-        srcValue: '',
-        validity: 0,
-        value: '',
-      },
-      imgWidth: {
         lastSubmittedValue: '',
         srcValue: '',
         validity: 0,
@@ -113,14 +117,27 @@ class AnnotationCreation extends Component {
         validity: 0,
         value: '',
       },
+      imgWidth: {
+        lastSubmittedValue: '',
+        srcValue: '',
+        validity: 0,
+        value: '',
+      },
+      lineWeightPopoverOpen: false,
       openAddImgDialog: false,
+      popoverAnchorEl: null,
+      popoverLineWeightAnchorEl: null,
+      strokeColor: '#00BFFF',
+      strokeWidth: 1,
+      svg: null,
+      textBody: '',
+      xywh: null,
       ...annoState,
     };
 
     this.submitForm = this.submitForm.bind(this);
     this.updateTextBody = this.updateTextBody.bind(this);
     this.getImgDimensions = this.getImgDimensions.bind(this);
-    this.loadImg = this.loadImg.bind(this);
     this.setImgWidth = this.setImgWidth.bind(this);
     this.setImgHeight = this.setImgHeight.bind(this);
     this.updateGeometry = this.updateGeometry.bind(this);
@@ -143,57 +160,26 @@ class AnnotationCreation extends Component {
     const { imgHeight, imgWidth, imgUrl } = this.state;
 
     this.setState({
-      openAddImgDialog: open,
-      imgUrl: {
-        ...imgUrl,
-        validity: 1,
-        value: imgUrl.lastSubmittedValue,
-      },
       imgHeight: {
         ...imgHeight,
         validity: 1,
         value: imgHeight.lastSubmittedValue,
       },
+      imgUrl: {
+        ...imgUrl,
+        validity: 1,
+        value: imgUrl.lastSubmittedValue,
+      },
       imgWidth: {
         ...imgWidth,
         validity: 1,
         value: imgWidth.lastSubmittedValue,
-      }
+      },
+      openAddImgDialog: open,
     });
-  };
-
-  //adjust the other dimension in proportion to the inputted dimension if constrained checkbox is checked
-  isConstrained(event) {
-    const { imgConstrain, imgWidth, imgHeight } = this.state;
-    const ratio = imgWidth.srcValue/imgHeight.srcValue;
-
-    if(imgConstrain){
-      if(event.target.id == 'width' && imgWidth.srcValue !== ''){        
-        //set height to be the same as width if width is less than 0
-        const height = imgWidth.value > 0 ? imgWidth.value * (1/ratio) : imgWidth.value;
-        this.setState({
-          imgHeight: {
-            ...imgHeight,
-            validity: 1,
-            value: height,
-          },
-        });
-      } else if(event.target.id == 'height' && imgHeight.srcValue !== ''){
-
-        //set width to be the same as height if height is less than 0
-        const width = imgHeight.value > 0 ? imgHeight.value * ratio : imgHeight.value;
-
-        this.setState({
-          imgWidth: {
-            ...imgWidth,
-            validity: 1,
-            value: width,
-          },
-        });
-      }
-    }
   }
 
+  /** */
   handleConstrainCheck(event) {
     const value = event.target.checked;
 
@@ -202,115 +188,42 @@ class AnnotationCreation extends Component {
     });
   }
 
+  /** */
   handleImgDialogSubmit() {
     let open = true;
     const { imgUrl, imgHeight, imgWidth } = this.state;
 
-    const expression = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
-    const regex = new RegExp(expression);
-    const urlValidity = imgUrl.value.match(regex) ? 1 : 2;
+    const urlValidity = AnnotationCreation.checkURL(imgUrl.value) ? 1 : 2;
     const widthValidity = imgWidth.value > 0 ? 1 : 2;
     const heightValidity = imgHeight.value > 0 ? 1 : 2;
     if (urlValidity === 1 && widthValidity === 1 && heightValidity === 1) {
       open = false;
     }
-    
+
     this.setState({
-      imgUrl: {
-        ...imgUrl,
-        value: imgUrl.value,
-        validity: urlValidity,
-        lastSubmittedValue: urlValidity === 1 ? imgUrl.value : imgUrl.lastSubmittedValue,
-      },
       imgHeight: {
         ...imgHeight,
-        value: imgHeight.value,
-        validity: heightValidity,
         lastSubmittedValue: heightValidity === 1 ? imgHeight.value : imgHeight.lastSubmittedValue,
+        validity: heightValidity,
+        value: imgHeight.value,
+      },
+      imgUrl: {
+        ...imgUrl,
+        lastSubmittedValue: urlValidity === 1 ? imgUrl.value : imgUrl.lastSubmittedValue,
+        validity: urlValidity,
+        value: imgUrl.value,
       },
       imgWidth: {
         ...imgWidth,
-        value: imgWidth.value,
-        validity: widthValidity,
         lastSubmittedValue: widthValidity === 1 ? imgWidth.value : imgWidth.lastSubmittedValue,
+        validity: widthValidity,
+        value: imgWidth.value,
       },
       openAddImgDialog: open,
     });
   }
 
-  setImgHeight(value) {
-    const { imgHeight } = this.state
-    this.setState({
-      imgHeight: {
-        ...imgHeight,
-        value,
-      },
-    });
-  }
-
-  setImgUrl(value) {
-    const { imgUrl } = this.state
-    this.setState({
-      imgUrl: {
-        ...imgUrl,
-        value,
-      },
-    });
-  }
-
-  setImgWidth(value) {
-    const { imgWidth } = this.state
-    this.setState({
-      imgWidth: {
-        ...imgWidth,
-        value,
-      },
-    });
-  }
-
-  loadImg(url){
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.src = url;
-
-      img.onload = () => resolve({height: img.height, width: img.width});
-      img.onerror = reject;
-    })
-  }
-
-  async getImgDimensions(url) {
-    const { imgHeight, imgWidth, imgUrl } = this.state;
-    try {
-      const dimensions = await this.loadImg(url);
-
-      this.setState({
-        imgUrl: {
-          ...imgUrl,
-          validity: 1,
-          value: url,
-        },
-        imgHeight: {
-          ...imgHeight,
-          srcValue: dimensions.height || '',
-          value: dimensions.height || '',
-        },
-        imgWidth: {
-          ...imgWidth,
-          srcValue: dimensions.width || '',
-          value: dimensions.width || '',
-        },
-      });
-    } catch (e) {
-      this.setState({
-        imgUrl: {
-          ...imgUrl,
-          validity: 2,
-          value : url,
-        },
-      });
-    }
-  }
-
+  /** */
   handleCloseLineWeight(e) {
     this.setState({
       lineWeightPopoverOpen: false,
@@ -325,6 +238,106 @@ class AnnotationCreation extends Component {
       popoverLineWeightAnchorEl: null,
       strokeWidth: e.currentTarget.value,
     });
+  }
+
+  /** */
+  async getImgDimensions(url) {
+    const { imgHeight, imgWidth, imgUrl } = this.state;
+    const urlValidity = AnnotationCreation.checkURL(url) ? 1 : 2;
+
+    try {
+      const dimensions = await AnnotationCreation.loadImg(url);
+
+      this.setState({
+        imgHeight: {
+          ...imgHeight,
+          srcValue: dimensions.height || '',
+          value: dimensions.height || '',
+        },
+        imgUrl: {
+          ...imgUrl,
+          validity: 1,
+          value: url,
+        },
+        imgWidth: {
+          ...imgWidth,
+          srcValue: dimensions.width || '',
+          value: dimensions.width || '',
+        },
+      });
+    } catch (e) {
+      this.setState({
+        imgUrl: {
+          ...imgUrl,
+          validity: urlValidity,
+          value: url,
+        },
+      });
+    }
+  }
+
+  /** */
+  setImgWidth(value) {
+    const { imgWidth } = this.state;
+    this.setState({
+      imgWidth: {
+        ...imgWidth,
+        value,
+      },
+    });
+  }
+
+  /** */
+  setImgUrl(value) {
+    const { imgUrl } = this.state;
+    this.setState({
+      imgUrl: {
+        ...imgUrl,
+        value,
+      },
+    });
+  }
+
+  /** */
+  setImgHeight(value) {
+    const { imgHeight } = this.state;
+    this.setState({
+      imgHeight: {
+        ...imgHeight,
+        value,
+      },
+    });
+  }
+
+  /** */
+  isConstrained(event) { // adjust other dimension in proportion to inputted dimension
+    const { imgConstrain, imgWidth, imgHeight } = this.state;
+    const ratio = imgWidth.srcValue / imgHeight.srcValue;
+
+    if (imgConstrain) {
+      if (event.target.id === 'width' && imgWidth.srcValue !== '') {
+        // set height to be the same as width if width is less than 0
+        const height = imgWidth.value > 0 ? imgWidth.value * (1 / ratio) : imgWidth.value;
+        this.setState({
+          imgHeight: {
+            ...imgHeight,
+            validity: 1,
+            value: height,
+          },
+        });
+      } else if (event.target.id === 'height' && imgHeight.srcValue !== '') {
+        // set width to be the same as height if height is less than 0
+        const width = imgHeight.value > 0 ? imgHeight.value * ratio : imgHeight.value;
+
+        this.setState({
+          imgWidth: {
+            ...imgWidth,
+            validity: 1,
+            value: width,
+          },
+        });
+      }
+    }
   }
 
   /** */
@@ -365,21 +378,21 @@ class AnnotationCreation extends Component {
   submitForm(e) {
     e.preventDefault();
     const {
-      annotation, canvases, closeCompanionWindow, receiveAnnotation, config, imgConstrain
+      annotation, canvases, closeCompanionWindow, receiveAnnotation, config,
     } = this.props;
     const {
-      textBody, image, imgWidth, imgHeight, imgUrl, tags, xywh, svg,
+      textBody, image, imgWidth, imgHeight, imgUrl, tags, xywh, svg, imgConstrain,
     } = this.state;
-    let annoBody = {value: textBody}
+    const annoBody = { value: textBody };
     let imgBody;
 
-    if(imgWidth.validity == 1 && imgHeight.validity == 1 && imgUrl.validity == 1){
+    if (imgWidth.validity === 1 && imgHeight.validity === 1 && imgUrl.validity === 1) {
       imgBody = {
-        w: imgWidth.value,
+        constrain: imgConstrain,
         h: imgHeight.value,
         url: imgUrl.value,
-        constrain: imgConstrain,
-      }
+        w: imgWidth.value,
+      };
     } else {
       imgBody = image;
     }
@@ -388,13 +401,13 @@ class AnnotationCreation extends Component {
       const storageAdapter = config.annotation.adapter(canvas.id);
 
       const anno = new WebAnnotation({
-        body: {...annoBody},
+        body: { ...annoBody },
         canvasId: canvas.id,
         id: (annotation && annotation.id) || `${uuid()}`,
+        image: imgBody,
         manifestId: canvas.options.resource.id,
         svg,
         tags,
-        image: imgBody,
         xywh,
       }).toJson();
 
@@ -447,8 +460,9 @@ class AnnotationCreation extends Component {
     } = this.props;
 
     const {
-      activeTool, colorPopoverOpen, currentColorType, fillColor, openAddImgDialog, popoverAnchorEl, strokeColor,
-      popoverLineWeightAnchorEl, lineWeightPopoverOpen, strokeWidth, closedMode, textBody, image, imgUrl, imgWidth, imgHeight, imgConstrain, svg,
+      activeTool, colorPopoverOpen, currentColorType, fillColor, openAddImgDialog, popoverAnchorEl,
+      strokeColor, popoverLineWeightAnchorEl, lineWeightPopoverOpen, strokeWidth, closedMode,
+      textBody, imgUrl, imgWidth, imgHeight, imgConstrain, svg,
     } = this.state;
     return (
       <CompanionWindow
@@ -580,7 +594,7 @@ class AnnotationCreation extends Component {
                 Image Content
               </Typography>
             </Grid>
-            <Grid item xs={12} style={{marginBottom: 10}}>
+            <Grid item xs={12} style={{ marginBottom: 10 }}>
               <ToggleButton value="image-icon" aria-label="insert an image" onClick={() => this.handleImgDialogChange(true)}>
                 <InsertPhotoIcon />
               </ToggleButton>
@@ -590,15 +604,15 @@ class AnnotationCreation extends Component {
                 <Typography variant="h2">Insert image</Typography>
               </DialogTitle>
               <DialogContent>
-                <DialogTitle id="form-dialog-subtitle-1" style={{paddingLeft: 0}}>
+                <DialogTitle id="form-dialog-subtitle-1" style={{ paddingLeft: 0 }}>
                   <Typography variant="MuiTypography-h3">Image source</Typography>
                 </DialogTitle>
                 <TextField
                   value={imgUrl.value}
-                  onChange={e => this.setImgUrl(e.target.value)}
-                  onBlur={e => this.getImgDimensions(e.target.value)}
-                  error={imgUrl.validity == 2}
-                  helperText={imgUrl.validity === 2 ? "Invalid URL" : ""}
+                  onChange={(e) => this.setImgUrl(e.target.value)}
+                  onBlur={(e) => this.getImgDimensions(e.target.value)}
+                  error={imgUrl.validity === 2}
+                  helperText={imgUrl.validity === 2 ? 'Invalid URL' : ''}
                   margin="dense"
                   id="source"
                   label="Image URL"
@@ -607,16 +621,16 @@ class AnnotationCreation extends Component {
                 />
               </DialogContent>
               <DialogContent>
-                <DialogTitle id="form-dialog-subtitle-2" style={{paddingLeft: 0}}>
+                <DialogTitle id="form-dialog-subtitle-2" style={{ paddingLeft: 0 }}>
                   <Typography variant="MuiTypography-h3">Image dimensions</Typography>
                 </DialogTitle>
                 <TextField
                   value={imgWidth.value}
-                  style = {{width: 100, marginRight: 10}}
-                  onChange={e => this.setImgWidth(e.target.value)}
+                  style={{ marginRight: 10, width: 100 }}
+                  onChange={(e) => this.setImgWidth(e.target.value)}
                   onBlur={(e) => this.isConstrained(e)}
-                  error={imgWidth.validity == 2}
-                  helperText={imgWidth.validity === 2 ? "Invalid width" : ""}
+                  error={imgWidth.validity === 2}
+                  helperText={imgWidth.validity === 2 ? 'Invalid width' : ''}
                   margin="dense"
                   id="width"
                   label="Width"
@@ -625,26 +639,26 @@ class AnnotationCreation extends Component {
                 />
                 <TextField
                   value={imgHeight.value}
-                  style = {{width: 100, marginLeft: 10 }}
-                  onChange={e => this.setImgHeight(e.target.value)}
+                  style={{ marginLeft: 10, width: 100 }}
+                  onChange={(e) => this.setImgHeight(e.target.value)}
                   onBlur={(e) => this.isConstrained(e)}
                   error={imgHeight.validity === 2}
-                  helperText={imgHeight.validity === 2 ? "Invalid height" : ""}
+                  helperText={imgHeight.validity === 2 ? 'Invalid height' : ''}
                   margin="dense"
                   id="height"
                   label="Height"
                   type="number"
-                  variant="outlined" 
+                  variant="outlined"
                 />
                 <FormControlLabel
-                  control={
+                  control={(
                     <Checkbox
                       checked={imgConstrain}
                       onChange={(e) => this.handleConstrainCheck(e)}
                       inputProps={{ 'aria-label': 'primary checkbox' }}
-                      style = {{ marginLeft: 30 }}
+                      style={{ marginLeft: 30 }}
                     />
-                  }
+                  )}
                   label="Constrain proportions"
                 />
               </DialogContent>

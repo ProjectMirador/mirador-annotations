@@ -37,10 +37,10 @@ export default class WebAnnotation {
     let bodies = [];
 
     if (this.body) {
-      let annoBody = {
+      const annoBody = {
         type: 'TextualBody',
         value: this.body.value,
-      }
+      };
 
       if (this.image) {
         annoBody.type = 'ImageBody';
