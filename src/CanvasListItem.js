@@ -86,6 +86,7 @@ class CanvasListItem extends Component {
   render() {
     const { children } = this.props;
     const { isHovering } = this.state;
+    const { windowViewType, toggleSingleCanvasDialogOpen } = this.context;
     return (
       <div
         onMouseEnter={this.handleMouseHover}
@@ -107,7 +108,11 @@ class CanvasListItem extends Component {
                 right: 0,
               }}
             >
-              <ToggleButton aria-label="Edit" onClick={this.handleEdit} value="edit">
+              <ToggleButton
+                aria-label="Edit"
+                onClick={windowViewType === 'single' ? this.handleEdit : toggleSingleCanvasDialogOpen}
+                value="edit"
+              >
                 <EditIcon />
               </ToggleButton>
               <ToggleButton aria-label="Delete" onClick={this.handleDelete} value="delete">

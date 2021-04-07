@@ -26,6 +26,7 @@ function createWrapper(props, context = {}) {
         canvases: [],
         receiveAnnotation,
         storageAdapter,
+        switchToSingleCanvasView: () => undefined,
         ...context,
       }}
     >

@@ -14,6 +14,8 @@ function createWrapper(props) {
       targetProps={{}}
       addCompanionWindow={jest.fn()}
       receiveAnnotation={jest.fn()}
+      switchToSingleCanvasView={jest.fn()}
+      windowViewType="single"
       {...props}
     />,
   );
@@ -39,6 +41,14 @@ describe('MiradorAnnotation', () => {
         position: 'right',
       },
     );
+  });
+  it('opens single canvas view dialog if not in single view', () => {
+    wrapper = createWrapper({
+      windowViewType: 'book',
+    });
+    expect(wrapper.instance().state.singleCanvasDialogOpen).toBe(false);
+    wrapper.find(MiradorMenuButton).simulate('click');
+    expect(wrapper.instance().state.singleCanvasDialogOpen).toBe(true);
   });
   it('renders no export button if export or LocalStorageAdapter are not configured', () => {
     wrapper = createWrapper();
