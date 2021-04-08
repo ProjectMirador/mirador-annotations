@@ -21,7 +21,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@psychobolt/react-paperjs": "0.0.57",
+    "@psychobolt/react-paperjs": "< 1.0",
     "@psychobolt/react-paperjs-editor": "0.0.11",
     "draft-js": "^0.11.6",
     "draft-js-export-html": "^1.4.1",
@@ -38,8 +38,8 @@
     "lodash": "^4.17.11",
     "mirador": "^3.0.0-rc.5",
     "prop-types": "^15.7.2",
-    "react": "16.x",
-    "react-dom": "16.x",
+    "react": "^16.0",
+    "react-dom": "^16.0",
     "uuid": "^8.0.0"
   },
   "devDependencies": {
@@ -68,8 +68,8 @@
     "mirador": "^3.0.0-rc.5",
     "nwb": "^0.24.7",
     "prop-types": "^15.7.2",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
     "uuid": "^8.2.0"
   },
   "author": "",
