@@ -86,16 +86,18 @@ class AnnotationCreation extends Component {
         annoState.image = props.annotation.body.image;
       }
 
-      if (Array.isArray(props.annotation.target.selector)) {
-        props.annotation.target.selector.forEach((selector) => {
-          if (selector.type === 'SvgSelector') {
-            annoState.svg = selector.value;
-          } else if (selector.type === 'FragmentSelector') {
-            annoState.xywh = selector.value.replace('xywh=', '');
-          }
-        });
-      } else {
-        annoState.svg = props.annotation.target.selector.value;
+      if (props.annotation.target.selector) {
+        if (Array.isArray(props.annotation.target.selector)) {
+          props.annotation.target.selector.forEach((selector) => {
+            if (selector.type === 'SvgSelector') {
+              annoState.svg = selector.value;
+            } else if (selector.type === 'FragmentSelector') {
+              annoState.xywh = selector.value.replace('xywh=', '');
+            }
+          });
+        } else {
+          annoState.svg = props.annotation.target.selector.value;
+        }
       }
     }
 
