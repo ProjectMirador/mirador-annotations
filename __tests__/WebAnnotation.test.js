@@ -78,14 +78,14 @@ describe('WebAnnotation', () => {
       ]);
     });
     it('with text only', () => {
-      subject = createSubject({ tags: null });
+      subject = createSubject({ image: null, tags: null });
       expect(subject.createBody()).toEqual({
         type: 'TextualBody',
         value: 'body',
       });
     });
     it('with tags only', () => {
-      subject = createSubject({ body: null });
+      subject = createSubject({ body: null, image: null });
       expect(subject.createBody()).toEqual({
         purpose: 'tagging',
         type: 'TextualBody',
