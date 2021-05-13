@@ -601,13 +601,13 @@ class AnnotationCreation extends Component {
                 <InsertPhotoIcon />
               </ToggleButton>
             </Grid>
-            <Dialog open={openAddImgDialog} fullWidth minWidth="20%" onClose={() => this.handleImgDialogChange(false)} aria-labelledby="form-dialog-title">
-              <DialogTitle id="form-dialog-title">
+            <Dialog open={openAddImgDialog} fullWidth onClose={() => this.handleImgDialogChange(false)} aria-labelledby="form-dialog-title">
+              <DialogTitle id="form-dialog-title" disableTypography>
                 <Typography variant="h2">Insert image</Typography>
               </DialogTitle>
               <DialogContent>
-                <DialogTitle id="form-dialog-subtitle-1" style={{ paddingLeft: 0 }}>
-                  <Typography variant="MuiTypography-h3">Image source</Typography>
+                <DialogTitle id="form-dialog-subtitle-1" style={{ paddingLeft: 0 }} disableTypography>
+                  <Typography variant="h5">Image source</Typography>
                 </DialogTitle>
                 <TextField
                   value={imgUrl.value}
@@ -623,8 +623,8 @@ class AnnotationCreation extends Component {
                 />
               </DialogContent>
               <DialogContent>
-                <DialogTitle id="form-dialog-subtitle-2" style={{ paddingLeft: 0 }}>
-                  <Typography variant="MuiTypography-h3">Image dimensions</Typography>
+                <DialogTitle id="form-dialog-subtitle-2" style={{ paddingLeft: 0 }} disableTypography>
+                  <Typography variant="h5">Image dimensions</Typography>
                 </DialogTitle>
                 <TextField
                   value={imgWidth.value}
