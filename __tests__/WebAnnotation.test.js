@@ -3,7 +3,9 @@ import WebAnnotation from '../src/WebAnnotation';
 /** */
 function createSubject(args = {}) {
   return new WebAnnotation({
-    body: 'body',
+    body: {
+      value: 'body',
+    },
     canvasId: 'canvasId',
     id: 'id',
     svg: 'svg',
@@ -17,8 +19,13 @@ describe('WebAnnotation', () => {
   let subject = createSubject();
   describe('constructor', () => {
     it('sets instance accessors', () => {
-      ['body', 'canvasId', 'id', 'svg', 'xywh'].forEach((prop) => {
+      ['canvasId', 'id', 'svg', 'xywh'].forEach((prop) => {
         expect(subject[prop]).toBe(prop);
+      });
+    });
+    it('sets instance accessors for body', () => {
+      ['body'].forEach((prop) => {
+        expect(subject[prop].value).toBe(prop);
       });
     });
   });
@@ -78,14 +85,14 @@ describe('WebAnnotation', () => {
       ]);
     });
     it('with text only', () => {
-      subject = createSubject({ tags: null });
+      subject = createSubject({ image: null, tags: null });
       expect(subject.createBody()).toEqual({
         type: 'TextualBody',
         value: 'body',
       });
     });
     it('with tags only', () => {
-      subject = createSubject({ body: null });
+      subject = createSubject({ body: null, image: null });
       expect(subject.createBody()).toEqual({
         purpose: 'tagging',
         type: 'TextualBody',

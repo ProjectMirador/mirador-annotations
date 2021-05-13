@@ -2,7 +2,14 @@
 export default class WebAnnotation {
   /** */
   constructor({
-    canvasId, id, xywh, body, tags, svg, manifestId,
+    canvasId,
+    id,
+    image,
+    xywh,
+    body,
+    tags,
+    svg,
+    manifestId,
   }) {
     this.id = id;
     this.canvasId = canvasId;
@@ -10,6 +17,7 @@ export default class WebAnnotation {
     this.body = body;
     this.tags = tags;
     this.svg = svg;
+    this.image = image;
     this.manifestId = manifestId;
   }
 
@@ -27,12 +35,20 @@ export default class WebAnnotation {
   /** */
   createBody() {
     let bodies = [];
+
     if (this.body) {
-      bodies.push({
+      const annoBody = {
         type: 'TextualBody',
-        value: this.body,
-      });
+        value: this.body.value,
+      };
+
+      if (this.image) {
+        annoBody.type = 'ImageBody';
+        Object.assign(annoBody, this.image);
+      }
+      bodies.push(annoBody);
     }
+
     if (this.tags) {
       bodies = bodies.concat(this.tags.map((tag) => ({
         purpose: 'tagging',
