@@ -20,6 +20,16 @@ class TextEditor extends Component {
     this.onChange = this.onChange.bind(this);
     this.handleKeyCommand = this.handleKeyCommand.bind(this);
     this.handleFormating = this.handleFormating.bind(this);
+    this.handleFocus = this.handleFocus.bind(this);
+    this.editorRef = React.createRef();
+  }
+
+  /**
+   * This is a kinda silly hack (but apparently recommended approach) to
+   * making sure the whole visible editor area, not just the first line.
+   */
+  handleFocus() {
+    if (this.editorRef.current) this.editorRef.current.focus();
   }
 
   /** */
@@ -58,6 +68,7 @@ class TextEditor extends Component {
     const { classes } = this.props;
     const { editorState } = this.state;
     const currentStyle = editorState.getCurrentInlineStyle();
+
     return (
       <div>
         <ToggleButtonGroup
@@ -77,11 +88,13 @@ class TextEditor extends Component {
             <ItalicIcon />
           </ToggleButton>
         </ToggleButtonGroup>
-        <div className={classes.editorRoot}>
+
+        <div className={classes.editorRoot} onClick={this.handleFocus}>
           <Editor
             editorState={editorState}
             handleKeyCommand={this.handleKeyCommand}
             onChange={this.onChange}
+            ref={this.editorRef}
           />
         </div>
       </div>
