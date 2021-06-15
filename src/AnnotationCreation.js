@@ -233,7 +233,7 @@ class AnnotationCreation extends Component {
           updateGeometry={this.updateGeometry}
           windowId={windowId}
         />
-        <form onSubmit={this.submitForm}>
+        <form onSubmit={this.submitForm} className={classes.section}>
           <Grid container>
             <Grid item xs={12}>
               <Typography variant="overline">
@@ -415,6 +415,12 @@ const styles = (theme) => ({
   paper: {
     display: 'flex',
     flexWrap: 'wrap',
+  },
+  section: {
+    paddingBottom: theme.spacing(1),
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(1),
+    paddingTop: theme.spacing(2),
   },
 });
 
