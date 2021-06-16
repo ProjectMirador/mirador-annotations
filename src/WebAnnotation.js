@@ -2,12 +2,13 @@
 export default class WebAnnotation {
   /** */
   constructor({
-    canvasId, id, xywh, body, tags, svg, manifestId,
+    canvasId, id, xywh, body, tags, svg, manifestId, motivation = 'commenting',
   }) {
     this.id = id;
     this.canvasId = canvasId;
     this.xywh = xywh;
     this.body = body;
+    this.motivation = motivation;
     this.tags = tags;
     this.svg = svg;
     this.manifestId = manifestId;
@@ -18,7 +19,7 @@ export default class WebAnnotation {
     return {
       body: this.createBody(),
       id: this.id,
-      motivation: 'commenting',
+      motivation: this.motivation,
       target: this.target(),
       type: 'Annotation',
     };

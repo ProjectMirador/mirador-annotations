@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import compose from 'lodash/flowRight';
+import { withTranslation } from 'react-i18next';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
@@ -22,6 +24,7 @@ import Divider from '@material-ui/core/Divider';
 import MenuItem from '@material-ui/core/MenuItem';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import MenuList from '@material-ui/core/MenuList';
+import Select from '@material-ui/core/Select';
 import { SketchPicker } from 'react-color';
 import { v4 as uuid } from 'uuid';
 import { withStyles } from '@material-ui/core/styles';
@@ -63,19 +66,28 @@ class AnnotationCreation extends Component {
           annoState.svg = props.annotation.target.selector.value;
         }
       }
+
+      annoState.motivation = props.annotation.motivation;
     }
-    this.state = {
+
+    const toolState = {
       activeTool: 'cursor',
-      annoBody: '',
       closedMode: 'closed',
-      colorPopoverOpen: false,
       currentColorType: false,
       fillColor: null,
+      motivation: (props.config.annotation.motivations && props.config.annotation.motivations[0]),
+      strokeColor: '#00BFFF',
+      strokeWidth: 3,
+      ...(props.config.annotation.defaults || {}),
+    };
+
+    this.state = {
+      ...toolState,
+      annoBody: '',
+      colorPopoverOpen: false,
       lineWeightPopoverOpen: false,
       popoverAnchorEl: null,
       popoverLineWeightAnchorEl: null,
-      strokeColor: '#00BFFF',
-      strokeWidth: 1,
       svg: null,
       xywh: null,
       ...annoState,
@@ -92,6 +104,7 @@ class AnnotationCreation extends Component {
     this.handleCloseLineWeight = this.handleCloseLineWeight.bind(this);
     this.closeChooseColor = this.closeChooseColor.bind(this);
     this.updateStrokeColor = this.updateStrokeColor.bind(this);
+    this.changeMotivation = this.changeMotivation.bind(this);
   }
 
   /** */
@@ -152,7 +165,7 @@ class AnnotationCreation extends Component {
       annotation, canvases, closeCompanionWindow, receiveAnnotation, config,
     } = this.props;
     const {
-      annoBody, tags, xywh, svg,
+      annoBody, tags, motivation, xywh, svg,
     } = this.state;
     canvases.forEach((canvas) => {
       const storageAdapter = config.annotation.adapter(canvas.id);
@@ -161,6 +174,7 @@ class AnnotationCreation extends Component {
         canvasId: canvas.id,
         id: (annotation && annotation.id) || `${uuid()}`,
         manifestId: canvas.options.resource.id,
+        motivation,
         svg,
         tags,
         xywh,
@@ -189,6 +203,13 @@ class AnnotationCreation extends Component {
   }
 
   /** */
+  changeMotivation(e) {
+    this.setState({
+      motivation: e.target.value,
+    });
+  }
+
+  /** */
   changeClosedMode(e) {
     this.setState({
       closedMode: e.currentTarget.value,
@@ -210,12 +231,13 @@ class AnnotationCreation extends Component {
   /** */
   render() {
     const {
-      annotation, classes, closeCompanionWindow, id, windowId,
+      annotation, classes, closeCompanionWindow, config, id, t, windowId,
     } = this.props;
 
     const {
       activeTool, colorPopoverOpen, currentColorType, fillColor, popoverAnchorEl, strokeColor,
       popoverLineWeightAnchorEl, lineWeightPopoverOpen, strokeWidth, closedMode, annoBody, svg,
+      motivation,
     } = this.state;
     return (
       <CompanionWindow
@@ -235,6 +257,24 @@ class AnnotationCreation extends Component {
         />
         <form onSubmit={this.submitForm}>
           <Grid container>
+            { config.annotation
+              && config.annotation.motivations
+              && config.annotation.motivations.length > 0 && (
+              <>
+                <Grid item xs={12}>
+                  <Typography variant="overline">
+                    Motivation
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Select variant="filled" value={motivation} onChange={this.changeMotivation}>
+                    {
+                      config.annotation.motivations.map((value) => (<MenuItem value={value} key={value}>{t('annotation_motivation', { context: value })}</MenuItem>))
+                    }
+                  </Select>
+                </Grid>
+              </>
+            )}
             <Grid item xs={12}>
               <Typography variant="overline">
                 Target
@@ -428,10 +468,13 @@ AnnotationCreation.propTypes = {
   config: PropTypes.shape({
     annotation: PropTypes.shape({
       adapter: PropTypes.func,
+      defaults: PropTypes.objectOf(PropTypes.string),
+      motivations: PropTypes.arrayOf(PropTypes.string),
     }),
   }).isRequired,
   id: PropTypes.string.isRequired,
   receiveAnnotation: PropTypes.func.isRequired,
+  t: PropTypes.func,
   windowId: PropTypes.string.isRequired,
 };
 
@@ -439,6 +482,7 @@ AnnotationCreation.defaultProps = {
   annotation: null,
   canvases: [],
   closeCompanionWindow: () => {},
+  t: (k) => k,
 };
 
-export default withStyles(styles)(AnnotationCreation);
+export default compose(withStyles(styles), withTranslation())(AnnotationCreation);

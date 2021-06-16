@@ -38,6 +38,19 @@ function mapStateToProps(state, { id: companionWindowId, windowId }) {
 export default {
   companionWindowKey: 'annotationCreation',
   component: AnnotationCreation,
+  config: {
+    annotation: {
+      motivations: ['commenting', 'describing', 'identifying', 'tagging'],
+    },
+    translations: {
+      en: {
+        annotation_motivation_commenting: 'Commenting',
+        annotation_motivation_describing: 'Describing',
+        annotation_motivation_identifying: 'Identifying',
+        annotation_motivation_tagging: 'Tagging',
+      },
+    },
+  },
   mapDispatchToProps,
   mapStateToProps,
 };
