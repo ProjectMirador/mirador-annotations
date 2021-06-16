@@ -77,6 +77,7 @@ class AnnotationCreation extends Component {
       strokeColor: '#00BFFF',
       strokeWidth: 1,
       svg: null,
+      textEditorStateBustingKey: 0,
       xywh: null,
       ...annoState,
     };
@@ -149,10 +150,10 @@ class AnnotationCreation extends Component {
   submitForm(e) {
     e.preventDefault();
     const {
-      annotation, canvases, closeCompanionWindow, receiveAnnotation, config,
+      annotation, canvases, receiveAnnotation, config,
     } = this.props;
     const {
-      annoBody, tags, xywh, svg,
+      annoBody, tags, xywh, svg, textEditorStateBustingKey,
     } = this.state;
     canvases.forEach((canvas) => {
       const storageAdapter = config.annotation.adapter(canvas.id);
@@ -175,10 +176,13 @@ class AnnotationCreation extends Component {
         });
       }
     });
+
     this.setState({
-      activeTool: null,
+      annoBody: '',
+      svg: null,
+      textEditorStateBustingKey: textEditorStateBustingKey + 1,
+      xywh: null,
     });
-    closeCompanionWindow();
   }
 
   /** */
@@ -216,6 +220,7 @@ class AnnotationCreation extends Component {
     const {
       activeTool, colorPopoverOpen, currentColorType, fillColor, popoverAnchorEl, strokeColor,
       popoverLineWeightAnchorEl, lineWeightPopoverOpen, strokeWidth, closedMode, annoBody, svg,
+      textEditorStateBustingKey,
     } = this.state;
     return (
       <CompanionWindow
@@ -349,6 +354,7 @@ class AnnotationCreation extends Component {
             </Grid>
             <Grid item xs={12}>
               <TextEditor
+                key={textEditorStateBustingKey}
                 annoHtml={annoBody}
                 updateAnnotationBody={this.updateBody}
               />
