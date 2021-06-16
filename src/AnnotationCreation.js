@@ -64,18 +64,24 @@ class AnnotationCreation extends Component {
         }
       }
     }
-    this.state = {
+
+    const toolState = {
       activeTool: 'cursor',
-      annoBody: '',
       closedMode: 'closed',
-      colorPopoverOpen: false,
       currentColorType: false,
       fillColor: null,
+      strokeColor: '#00BFFF',
+      strokeWidth: 3,
+      ...(props.config.annotation.defaults || {}),
+    };
+
+    this.state = {
+      ...toolState,
+      annoBody: '',
+      colorPopoverOpen: false,
       lineWeightPopoverOpen: false,
       popoverAnchorEl: null,
       popoverLineWeightAnchorEl: null,
-      strokeColor: '#00BFFF',
-      strokeWidth: 1,
       svg: null,
       xywh: null,
       ...annoState,
@@ -428,6 +434,7 @@ AnnotationCreation.propTypes = {
   config: PropTypes.shape({
     annotation: PropTypes.shape({
       adapter: PropTypes.func,
+      defaults: PropTypes.objectOf(PropTypes.string),
     }),
   }).isRequired,
   id: PropTypes.string.isRequired,

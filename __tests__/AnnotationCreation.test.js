@@ -10,7 +10,7 @@ function createWrapper(props) {
   return shallow(
     <AnnotationCreation
       id="x"
-      config={{}}
+      config={{ annotation: {} }}
       receiveAnnotation={jest.fn()}
       windowId="abc"
       {...props}
