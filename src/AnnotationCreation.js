@@ -367,12 +367,15 @@ class AnnotationCreation extends Component {
         >
           <Paper>
             <ClickAwayListener onClickAway={this.handleCloseLineWeight}>
-              <MenuList>
+              <MenuList autoFocus role="listbox">
                 {[1, 3, 5, 10, 50].map((option, index) => (
                   <MenuItem
                     key={option}
                     onClick={this.handleLineWeightSelect}
                     value={option}
+                    selected={option == strokeWidth}
+                    role="option"
+                    aria-selected={option == strokeWidth}
                   >
                     {option}
                   </MenuItem>
