@@ -26,7 +26,7 @@ class TextEditor extends Component {
 
   /**
    * This is a kinda silly hack (but apparently recommended approach) to
-   * making sure the whole visible editor area, not just the first line.
+   * making sure the whole visible editor area is clickable, not just the first line.
    */
   handleFocus() {
     if (this.editorRef.current) this.editorRef.current.focus();
