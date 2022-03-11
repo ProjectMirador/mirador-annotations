@@ -449,7 +449,7 @@ AnnotationCreation.propTypes = {
   config: PropTypes.shape({
     annotation: PropTypes.shape({
       adapter: PropTypes.func,
-      defaults: PropTypes.objectOf(PropTypes.string),
+      defaults: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.bool, PropTypes.func, PropTypes.number, PropTypes.string])),
     }),
   }).isRequired,
   id: PropTypes.string.isRequired,
