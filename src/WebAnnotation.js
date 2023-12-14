@@ -81,11 +81,11 @@ export default class WebAnnotation {
   /** */
   source() {
     let source = this.canvasId;
-    if (this.manifest) {
+    if (this.manifestId) {
       source = {
         id: this.canvasId,
         partOf: {
-          id: this.manifest.id,
+          id: this.manifestId,
           type: 'Manifest',
         },
         type: 'Canvas',
