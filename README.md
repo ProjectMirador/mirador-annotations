@@ -4,6 +4,12 @@
 [![npm package][npm-badge]][npm]
 [![Coveralls][coveralls-badge]][coveralls]
 
+>
+> This codebase (`mirador-annotations`) does not work with Mirador 4. The [Mirador Annotation Editor (MAE) Plugin](https://github.com/TETRAS-IIIF/mirador-annotation-editor) is a community plugin developed to fill this need and works with Mirador 4!
+> You can view integration examples for Mirador and MAE [here](https://github.com/ProjectMirador/mirador-integration).
+
+
+
 `mirador-annotations` is a [Mirador 3](https://github.com/projectmirador/mirador) plugin that adds annotation creation tools to the user interface. Users can` create rectangle, oval, and polygon annotations and add text descriptors. A [live demo](https://mirador-annotations.netlify.app/) that stores annotations in local storage is available for testing. See the [issue queue](https://github.com/ProjectMirador/mirador-annotations/issues) for design proposals for additional functionality.
 
 ![annotation creation panel](https://user-images.githubusercontent.com/5402927/86628717-23c3ae80-bf7f-11ea-8f0b-389c39eb4398.png)
