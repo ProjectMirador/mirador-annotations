@@ -3,12 +3,14 @@ import mirador from 'mirador/dist/es/src/index';
 import annotationPlugins from '../../src';
 import LocalStorageAdapter from '../../src/LocalStorageAdapter';
 import AnnototAdapter from '../../src/AnnototAdapter';
+import RerumAdapter from '../../src/RerumAdapter';
 
 const endpointUrl = 'http://127.0.0.1:3000/annotations';
 const config = {
   annotation: {
     adapter: (canvasId) => new LocalStorageAdapter(`localStorage://?canvasId=${canvasId}`),
     // adapter: (canvasId) => new AnnototAdapter(canvasId, endpointUrl),
+    // adapter: (canvasId) => new RerumAdapter(canvasId, endpointUri?, creator?),
     exportLocalStorageAnnotations: false, // display annotation JSON export button
   },
   id: 'demo',
