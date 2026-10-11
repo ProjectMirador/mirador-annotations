@@ -451,8 +451,8 @@ AnnotationCreation.propTypes = {
       adapter: PropTypes.func,
       defaults: PropTypes.objectOf(
         PropTypes.oneOfType(
-          [PropTypes.bool, PropTypes.func, PropTypes.number, PropTypes.string]
-        )
+          [PropTypes.bool, PropTypes.func, PropTypes.number, PropTypes.string],
+        ),
       ),
     }),
   }).isRequired,

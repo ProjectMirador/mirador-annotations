@@ -10,7 +10,7 @@ import
   RectangleTool,
   FreeformPathTool,
 }
-  from '@psychobolt/react-paperjs-editor';
+from '@psychobolt/react-paperjs-editor';
 import { Point } from 'paper';
 import flatten from 'lodash/flatten';
 import EditTool from './EditTool';

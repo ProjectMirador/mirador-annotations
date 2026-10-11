@@ -22,12 +22,11 @@
   },
   "dependencies": {
     "@psychobolt/react-paperjs": "^1.0.0",
-    "@psychobolt/react-paperjs-editor": "^0.0.14",
+    "@psychobolt/react-paperjs-editor": "^0.0.16",
     "draft-js": "^0.11.6",
     "draft-js-export-html": "^1.4.1",
     "draft-js-import-html": "^1.4.1",
-    "immutable": "^4.0.0-rc.12",
-    "material-ui-color-components": "^0.3.0",
+    "immutable": "^3.7.4",
     "paper": "^0.12.11",
     "react-color": "^2.18.1"
   },
@@ -51,14 +50,13 @@
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@wojtekmaj/enzyme-adapter-react-17": "^0.6.0",
     "babel-eslint": "^10.1.0",
-    "canvas": "^2.6.1",
     "enzyme": "^3.11.0",
     "eslint": "^7.2",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-config-react-app": "^6.0.0",
     "eslint-plugin-flowtype": "^5.6.0",
     "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jest": "^23.18.0",
+    "eslint-plugin-jest": "^24.0.0",
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-react": "^7.20.3",
     "eslint-plugin-react-hooks": "^4.0.6",
@@ -70,6 +68,7 @@
     "prop-types": "^15.7.2",
     "react": "^17.0",
     "react-dom": "^17.0",
+    "typescript": "^4.9.5",
     "uuid": "^8.2.0"
   },
   "author": "",
@@ -78,5 +77,14 @@
   "repository": "",
   "keywords": [
     "react-component"
-  ]
+  ],
+  "overrides": {
+    "mirador": {
+      "react": "^17.0.2",
+      "react-dom": "^17.0.2"
+    },
+    "cheerio": "1.0.0-rc.12",
+    "react-draggable": "~4.4.6",
+    "manifesto.js": "4.2.20"
+  }
 }
